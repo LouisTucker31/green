@@ -4,7 +4,7 @@ const API = (() => {
 
   // ─── CONFIG ─────────────────────────────────────────────
   const BASE_URL = 'https://uk-golf-course-data-api.p.rapidapi.com';
-  const API_KEY  = 'YOUR_API_KEY'; // replace with your RapidAPI key
+  const API_KEY  = '6f96899fddmsh9b22ce571e8e726p12fccajsnb64f1850317b'; // replace with your RapidAPI key
 
   const HEADERS = {
     'Content-Type':   'application/json',

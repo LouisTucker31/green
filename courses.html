@@ -25,182 +25,64 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
-        <input type="text" placeholder="Search for a course" class="search-input" />
+        <input type="text" placeholder="Search for a course" class="search-input" id="search-input" />
+        <button class="search-clear hidden" id="search-clear" aria-label="Clear">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
       </div>
     </div>
 
     <!-- FILTER TABS -->
     <div class="filter-tabs">
-      <button class="filter-tab active">All</button>
-      <button class="filter-tab">Played</button>
-      <button class="filter-tab">Wishlist</button>
-      <button class="filter-tab">Favourite</button>
+      <button class="filter-tab active" data-filter="all" onclick="GreenCourses.setFilter('all')">All</button>
+      <button class="filter-tab" data-filter="played" onclick="GreenCourses.setFilter('played')">Played</button>
+      <button class="filter-tab" data-filter="wishlist" onclick="GreenCourses.setFilter('wishlist')">Wishlist</button>
+      <button class="filter-tab" data-filter="favourite" onclick="GreenCourses.setFilter('favourite')">Favourite</button>
     </div>
 
     <!-- SCROLLABLE CONTENT -->
-    <main class="courses-main">
+    <main class="courses-main" id="courses-main">
+
+      <!-- LOADING STATE -->
+      <div class="loading-state" id="loading-state">
+        <div class="loading-spinner"></div>
+        <span id="loading-message">Loading courses...</span>
+      </div>
+
+      <!-- ERROR STATE -->
+      <div class="error-state hidden" id="error-state">
+        <span>Failed to load courses. Please try again.</span>
+        <button class="retry-btn" id="retry-btn">Retry</button>
+      </div>
 
       <!-- NEARBY COURSES -->
-      <section class="courses-section">
+      <section class="courses-section hidden" id="nearby-section">
         <div class="section-header">
           <h2 class="section-title">Nearby Courses</h2>
-          <a href="#" class="view-all">View all</a>
         </div>
-
-        <div class="course-list">
-
-          <a href="course.html" class="course-item">
-            <div class="course-img-placeholder"></div>
-            <div class="course-info">
-              <span class="course-name">Wentworth Club (West)</span>
-              <span class="course-location">Virginia Water, Surrey</span>
-            </div>
-            <div class="course-status played">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
-            </div>
-          </a>
-
-          <a href="course.html" class="course-item">
-            <div class="course-img-placeholder"></div>
-            <div class="course-info">
-              <span class="course-name">The Shire London</span>
-              <span class="course-location">St Albans, Hertfordshire</span>
-            </div>
-            <div class="course-status played">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
-            </div>
-          </a>
-
-          <a href="course.html" class="course-item">
-            <div class="course-img-placeholder"></div>
-            <div class="course-info">
-              <span class="course-name">Hanbury Manor</span>
-              <span class="course-location">Ware, Hertfordshire</span>
-            </div>
-            <div class="course-status unplayed">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-              </svg>
-            </div>
-          </a>
-
-        </div>
+        <div class="course-list" id="nearby-list"></div>
       </section>
 
-      <!-- ALL COURSES -->
-      <section class="courses-section">
+      <!-- ALL / FILTERED COURSES -->
+      <section class="courses-section hidden" id="all-section">
         <div class="section-header">
-          <h2 class="section-title">All Courses</h2>
-          <span class="course-count">127 courses</span>
+          <h2 class="section-title" id="all-section-title">All Courses</h2>
+          <span class="course-count" id="course-count"></span>
         </div>
-
-        <!-- ALPHA GROUP A -->
-        <div class="alpha-group">
-          <span class="alpha-label">A</span>
-          <div class="course-list">
-
-            <a href="course.html" class="course-item">
-              <div class="course-img-placeholder"></div>
-              <div class="course-info">
-                <span class="course-name">Alwoodley Golf Club</span>
-                <span class="course-location">Leeds, West Yorkshire</span>
-              </div>
-              <div class="course-status unplayed">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                </svg>
-              </div>
-            </a>
-
-            <a href="course.html" class="course-item">
-              <div class="course-img-placeholder"></div>
-              <div class="course-info">
-                <span class="course-name">Ardglass Golf Club</span>
-                <span class="course-location">Ardglass, Co. Down</span>
-              </div>
-              <div class="course-status played">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-              </div>
-            </a>
-
-          </div>
-        </div>
-
-        <!-- ALPHA GROUP B -->
-        <div class="alpha-group">
-          <span class="alpha-label">B</span>
-          <div class="course-list">
-
-            <a href="course.html" class="course-item">
-              <div class="course-img-placeholder"></div>
-              <div class="course-info">
-                <span class="course-name">Ballybunion Golf Club</span>
-                <span class="course-location">Ballybunion, Co. Kerry</span>
-              </div>
-              <div class="course-status unplayed">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                </svg>
-              </div>
-            </a>
-
-            <a href="course.html" class="course-item">
-              <div class="course-img-placeholder"></div>
-              <div class="course-info">
-                <span class="course-name">Berkshire, The (Red)</span>
-                <span class="course-location">Ascot, Berkshire</span>
-              </div>
-              <div class="course-status played">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-              </div>
-            </a>
-
-            <a href="course.html" class="course-item">
-              <div class="course-img-placeholder"></div>
-              <div class="course-info">
-                <span class="course-name">Brora Golf Club</span>
-                <span class="course-location">Brora, Sutherland</span>
-              </div>
-              <div class="course-status unplayed">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                </svg>
-              </div>
-            </a>
-
-          </div>
-        </div>
-
-        <!-- ALPHA GROUP F -->
-        <div class="alpha-group">
-          <span class="alpha-label">F</span>
-          <div class="course-list">
-
-            <a href="course.html" class="course-item">
-              <div class="course-img-placeholder"></div>
-              <div class="course-info">
-                <span class="course-name">Formby Golf Club</span>
-                <span class="course-location">Formby, Merseyside</span>
-              </div>
-              <div class="course-status played">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-              </div>
-            </a>
-
-          </div>
-        </div>
-
+        <div id="alpha-groups"></div>
       </section>
+
+      <!-- LOAD MORE -->
+      <div class="load-more-wrap hidden" id="load-more-wrap">
+        <button class="load-more-btn" id="load-more-btn">Load more courses</button>
+      </div>
+
+      <!-- EMPTY STATE -->
+      <div class="empty-state hidden" id="empty-state">
+        <span id="empty-message">No courses found</span>
+      </div>
 
     </main>
 
@@ -242,6 +124,9 @@
 
   </div>
 
+  <script src="js/db.js"></script>
+  <script src="js/api.js"></script>
   <script src="js/components/nav.js"></script>
+  <script src="js/pages/courses.js"></script>
 </body>
 </html>
