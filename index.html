@@ -1,0 +1,165 @@
+<!-- Green PWA | Home / Dashboard -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a3a28" />
+  <title>Green</title>
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/pages/home.css" />
+</head>
+<body>
+
+  <!-- PAGE WRAPPER -->
+  <div class="page" id="page-home">
+
+    <!-- HEADER -->
+    <header class="home-header">
+      <h1 class="home-logo">Green</h1>
+      <button class="icon-btn" aria-label="Settings">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button>
+    </header>
+
+    <!-- SCROLLABLE CONTENT -->
+    <main class="home-main">
+
+      <!-- STAT TILES -->
+      <section class="stat-tiles">
+        <div class="stat-tile">
+          <span class="stat-number">127</span>
+          <span class="stat-label">Courses Played</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-number">19</span>
+          <span class="stat-label">Counties</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-number">7</span>
+          <span class="stat-label">Countries</span>
+        </div>
+      </section>
+
+      <!-- UK MAP PLACEHOLDER -->
+      <section class="map-card">
+        <div class="map-placeholder">
+          <svg viewBox="0 0 200 300" fill="none" xmlns="http://www.w3.org/2000/svg" class="uk-shape">
+            <!-- Simplified UK silhouette shape -->
+            <path d="M100 20 C80 18 60 30 55 50 C48 70 50 85 45 100 C40 118 30 125 28 140 C25 158 35 170 40 185 C45 200 42 215 50 228 C58 242 75 248 90 252 C105 256 118 250 128 240 C140 228 145 210 148 195 C152 178 150 162 155 148 C162 130 172 120 170 102 C168 85 158 75 155 58 C152 42 140 25 120 20 Z" 
+                  fill="var(--green-200, #c8e6d4)" stroke="var(--green-400)" stroke-width="1.5"/>
+            <!-- Scotland upper -->
+            <path d="M100 20 C90 10 75 8 68 20 C62 30 65 42 70 50 C78 38 90 28 100 20 Z" 
+                  fill="var(--green-300, #a8d8b8)" stroke="var(--green-400)" stroke-width="1"/>
+            <!-- Dot clusters for played areas -->
+            <circle cx="95" cy="180" r="5" fill="var(--green-600)" opacity="0.8"/>
+            <circle cx="110" cy="160" r="4" fill="var(--green-600)" opacity="0.8"/>
+            <circle cx="85" cy="165" r="3" fill="var(--green-600)" opacity="0.6"/>
+            <circle cx="100" cy="145" r="4" fill="var(--green-500)" opacity="0.7"/>
+            <circle cx="88" cy="130" r="3" fill="var(--green-500)" opacity="0.6"/>
+            <circle cx="78" cy="90" r="4" fill="var(--green-600)" opacity="0.8"/>
+            <circle cx="92" cy="75" r="3" fill="var(--green-500)" opacity="0.6"/>
+          </svg>
+        </div>
+        <div class="map-label">12% of UK courses played</div>
+      </section>
+
+      <!-- RECENT ROUNDS -->
+      <section class="recent-rounds">
+        <div class="section-header">
+          <h2 class="section-title">Recent Rounds</h2>
+          <a href="passport.html" class="view-all">View all</a>
+        </div>
+
+        <div class="round-list">
+
+          <a href="course.html" class="round-item">
+            <div class="round-img-placeholder"></div>
+            <div class="round-info">
+              <span class="round-course">Royal Birkdale</span>
+              <span class="round-date">16 May 2024</span>
+            </div>
+            <div class="round-score">
+              <span class="score-num">83</span>
+              <span class="score-diff positive">+11</span>
+            </div>
+          </a>
+
+          <a href="course.html" class="round-item">
+            <div class="round-img-placeholder"></div>
+            <div class="round-info">
+              <span class="round-course">St Andrews (Old Course)</span>
+              <span class="round-date">12 May 2024</span>
+            </div>
+            <div class="round-score">
+              <span class="score-num">79</span>
+              <span class="score-diff positive">+7</span>
+            </div>
+          </a>
+
+          <a href="course.html" class="round-item">
+            <div class="round-img-placeholder"></div>
+            <div class="round-info">
+              <span class="round-course">Sunningdale</span>
+              <span class="round-date">4 May 2024</span>
+            </div>
+            <div class="round-score">
+              <span class="score-num">87</span>
+              <span class="score-diff positive">+15</span>
+            </div>
+          </a>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+      <a href="index.html" class="nav-item active">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        <span>Home</span>
+      </a>
+      <a href="courses.html" class="nav-item">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <span>Courses</span>
+      </a>
+      <a href="#" class="nav-item nav-add">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+      </a>
+      <a href="passport.html" class="nav-item">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <rect x="3" y="3" width="18" height="18" rx="3"/>
+          <path d="M8 7h8M8 12h8M8 17h5"/>
+        </svg>
+        <span>Passport</span>
+      </a>
+      <a href="profile.html" class="nav-item">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        <span>Profile</span>
+      </a>
+    </nav>
+
+  </div>
+
+  <script src="js/db.js"></script>
+<script src="js/api.js"></script>
+<script src="js/components/nav.js"></script>
+</body>
+</html>

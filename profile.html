@@ -1,0 +1,233 @@
+<!-- Green PWA | User Profile -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a3a28" />
+  <title>Green – Profile</title>
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/pages/profile.css" />
+</head>
+<body>
+
+  <div class="page" id="page-profile">
+
+    <!-- HEADER -->
+    <header class="profile-header">
+      <h1 class="page-title">Profile</h1>
+      <button class="icon-btn" aria-label="Settings">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button>
+    </header>
+
+    <!-- SCROLLABLE CONTENT -->
+    <main class="profile-main">
+
+      <!-- AVATAR + NAME -->
+      <section class="profile-identity">
+        <div class="profile-avatar">
+          <div class="avatar-placeholder">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+          </div>
+        </div>
+        <h2 class="profile-name">James Wilson</h2>
+        <span class="profile-handle">@jameswilson</span>
+      </section>
+
+      <!-- STAT TILES -->
+      <section class="profile-stats">
+        <div class="profile-stat-tile">
+          <span class="stat-number">127</span>
+          <span class="stat-label">Courses</span>
+        </div>
+        <div class="profile-stat-tile">
+          <span class="stat-number">19</span>
+          <span class="stat-label">Counties</span>
+        </div>
+        <div class="profile-stat-tile">
+          <span class="stat-number">7</span>
+          <span class="stat-label">Countries</span>
+        </div>
+      </section>
+
+      <!-- DETAILS -->
+      <section class="profile-details">
+
+        <div class="profile-detail-row">
+          <span class="detail-label">Home Course</span>
+          <span class="detail-value">The Shire London</span>
+        </div>
+
+        <div class="profile-detail-row">
+          <span class="detail-label">Handicap</span>
+          <span class="detail-value">8.3</span>
+        </div>
+
+        <div class="profile-detail-row">
+          <span class="detail-label">Best Score</span>
+          <span class="detail-value">74</span>
+        </div>
+
+        <div class="profile-detail-row">
+          <span class="detail-label">Favourite Course</span>
+          <span class="detail-value">Royal Birkdale</span>
+        </div>
+
+      </section>
+
+      <!-- ACHIEVEMENTS SUMMARY -->
+      <section class="profile-achievements">
+        <div class="section-header">
+          <h2 class="section-title">Achievements</h2>
+          <a href="achievements.html" class="view-all">View all</a>
+        </div>
+
+        <div class="achievements-progress-card">
+          <div class="achievements-counts">
+            <div class="ach-count">
+              <span class="ach-count-num">28</span>
+              <span class="ach-count-label">Unlocked</span>
+            </div>
+            <div class="ach-count-divider"></div>
+            <div class="ach-count">
+              <span class="ach-count-num">68</span>
+              <span class="ach-count-label">Available</span>
+            </div>
+            <div class="ach-count-divider"></div>
+            <div class="ach-count">
+              <span class="ach-count-num">1,250</span>
+              <span class="ach-count-label">Points</span>
+            </div>
+          </div>
+          <div class="ach-bar-track">
+            <div class="ach-bar-fill" style="width: 41%"></div>
+          </div>
+        </div>
+
+        <!-- RECENT ACHIEVEMENTS -->
+        <div class="achievement-list">
+
+          <div class="achievement-item unlocked">
+            <div class="achievement-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <circle cx="12" cy="8" r="6"/>
+                <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/>
+              </svg>
+            </div>
+            <div class="achievement-info">
+              <span class="achievement-name">First Round</span>
+              <span class="achievement-desc">Play your first round</span>
+            </div>
+            <span class="achievement-pts">10 pts</span>
+          </div>
+
+          <div class="achievement-item unlocked">
+            <div class="achievement-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <circle cx="12" cy="8" r="6"/>
+                <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/>
+              </svg>
+            </div>
+            <div class="achievement-info">
+              <span class="achievement-name">10 Courses</span>
+              <span class="achievement-desc">Play 10 different courses</span>
+            </div>
+            <span class="achievement-pts">50 pts</span>
+          </div>
+
+          <div class="achievement-item unlocked">
+            <div class="achievement-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <circle cx="12" cy="8" r="6"/>
+                <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/>
+              </svg>
+            </div>
+            <div class="achievement-info">
+              <span class="achievement-name">50 Courses</span>
+              <span class="achievement-desc">Play 50 different courses</span>
+            </div>
+            <span class="achievement-pts">200 pts</span>
+          </div>
+
+          <div class="achievement-item locked">
+            <div class="achievement-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </div>
+            <div class="achievement-info">
+              <span class="achievement-name">100 Courses</span>
+              <span class="achievement-desc">Play 100 different courses</span>
+            </div>
+            <div class="achievement-progress-pill">127/100</div>
+          </div>
+
+          <div class="achievement-item locked">
+            <div class="achievement-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </div>
+            <div class="achievement-info">
+              <span class="achievement-name">County Completer</span>
+              <span class="achievement-desc">Complete a county</span>
+            </div>
+            <div class="achievement-progress-pill">5/1</div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+      <a href="index.html" class="nav-item">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        <span>Home</span>
+      </a>
+      <a href="courses.html" class="nav-item">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <span>Courses</span>
+      </a>
+      <a href="#" class="nav-item nav-add">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+      </a>
+      <a href="passport.html" class="nav-item">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <rect x="3" y="3" width="18" height="18" rx="3"/>
+          <path d="M8 7h8M8 12h8M8 17h5"/>
+        </svg>
+        <span>Passport</span>
+      </a>
+      <a href="profile.html" class="nav-item active">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        <span>Profile</span>
+      </a>
+    </nav>
+
+  </div>
+
+  <script src="js/components/nav.js"></script>
+</body>
+</html>

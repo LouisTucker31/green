@@ -1,0 +1,247 @@
+<!-- Green PWA | Course Browser -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a3a28" />
+  <title>Green – Courses</title>
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/pages/courses.css" />
+</head>
+<body>
+
+  <div class="page" id="page-courses">
+
+    <!-- HEADER -->
+    <header class="courses-header">
+      <h1 class="page-title">Courses</h1>
+    </header>
+
+    <!-- SEARCH -->
+    <div class="search-bar-wrap">
+      <div class="search-bar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" placeholder="Search for a course" class="search-input" />
+      </div>
+    </div>
+
+    <!-- FILTER TABS -->
+    <div class="filter-tabs">
+      <button class="filter-tab active">All</button>
+      <button class="filter-tab">Played</button>
+      <button class="filter-tab">Wishlist</button>
+      <button class="filter-tab">Favourite</button>
+    </div>
+
+    <!-- SCROLLABLE CONTENT -->
+    <main class="courses-main">
+
+      <!-- NEARBY COURSES -->
+      <section class="courses-section">
+        <div class="section-header">
+          <h2 class="section-title">Nearby Courses</h2>
+          <a href="#" class="view-all">View all</a>
+        </div>
+
+        <div class="course-list">
+
+          <a href="course.html" class="course-item">
+            <div class="course-img-placeholder"></div>
+            <div class="course-info">
+              <span class="course-name">Wentworth Club (West)</span>
+              <span class="course-location">Virginia Water, Surrey</span>
+            </div>
+            <div class="course-status played">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+          </a>
+
+          <a href="course.html" class="course-item">
+            <div class="course-img-placeholder"></div>
+            <div class="course-info">
+              <span class="course-name">The Shire London</span>
+              <span class="course-location">St Albans, Hertfordshire</span>
+            </div>
+            <div class="course-status played">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+          </a>
+
+          <a href="course.html" class="course-item">
+            <div class="course-img-placeholder"></div>
+            <div class="course-info">
+              <span class="course-name">Hanbury Manor</span>
+              <span class="course-location">Ware, Hertfordshire</span>
+            </div>
+            <div class="course-status unplayed">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+            </div>
+          </a>
+
+        </div>
+      </section>
+
+      <!-- ALL COURSES -->
+      <section class="courses-section">
+        <div class="section-header">
+          <h2 class="section-title">All Courses</h2>
+          <span class="course-count">127 courses</span>
+        </div>
+
+        <!-- ALPHA GROUP A -->
+        <div class="alpha-group">
+          <span class="alpha-label">A</span>
+          <div class="course-list">
+
+            <a href="course.html" class="course-item">
+              <div class="course-img-placeholder"></div>
+              <div class="course-info">
+                <span class="course-name">Alwoodley Golf Club</span>
+                <span class="course-location">Leeds, West Yorkshire</span>
+              </div>
+              <div class="course-status unplayed">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </div>
+            </a>
+
+            <a href="course.html" class="course-item">
+              <div class="course-img-placeholder"></div>
+              <div class="course-info">
+                <span class="course-name">Ardglass Golf Club</span>
+                <span class="course-location">Ardglass, Co. Down</span>
+              </div>
+              <div class="course-status played">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              </div>
+            </a>
+
+          </div>
+        </div>
+
+        <!-- ALPHA GROUP B -->
+        <div class="alpha-group">
+          <span class="alpha-label">B</span>
+          <div class="course-list">
+
+            <a href="course.html" class="course-item">
+              <div class="course-img-placeholder"></div>
+              <div class="course-info">
+                <span class="course-name">Ballybunion Golf Club</span>
+                <span class="course-location">Ballybunion, Co. Kerry</span>
+              </div>
+              <div class="course-status unplayed">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </div>
+            </a>
+
+            <a href="course.html" class="course-item">
+              <div class="course-img-placeholder"></div>
+              <div class="course-info">
+                <span class="course-name">Berkshire, The (Red)</span>
+                <span class="course-location">Ascot, Berkshire</span>
+              </div>
+              <div class="course-status played">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              </div>
+            </a>
+
+            <a href="course.html" class="course-item">
+              <div class="course-img-placeholder"></div>
+              <div class="course-info">
+                <span class="course-name">Brora Golf Club</span>
+                <span class="course-location">Brora, Sutherland</span>
+              </div>
+              <div class="course-status unplayed">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </div>
+            </a>
+
+          </div>
+        </div>
+
+        <!-- ALPHA GROUP F -->
+        <div class="alpha-group">
+          <span class="alpha-label">F</span>
+          <div class="course-list">
+
+            <a href="course.html" class="course-item">
+              <div class="course-img-placeholder"></div>
+              <div class="course-info">
+                <span class="course-name">Formby Golf Club</span>
+                <span class="course-location">Formby, Merseyside</span>
+              </div>
+              <div class="course-status played">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              </div>
+            </a>
+
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+      <a href="index.html" class="nav-item">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        <span>Home</span>
+      </a>
+      <a href="courses.html" class="nav-item active">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <span>Courses</span>
+      </a>
+      <a href="#" class="nav-item nav-add">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+      </a>
+      <a href="passport.html" class="nav-item">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <rect x="3" y="3" width="18" height="18" rx="3"/>
+          <path d="M8 7h8M8 12h8M8 17h5"/>
+        </svg>
+        <span>Passport</span>
+      </a>
+      <a href="profile.html" class="nav-item">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        <span>Profile</span>
+      </a>
+    </nav>
+
+  </div>
+
+  <script src="js/components/nav.js"></script>
+</body>
+</html>

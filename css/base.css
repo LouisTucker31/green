@@ -1,0 +1,52 @@
+/* Green PWA | Base — CSS variables, reset, typography */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  --green-900: #0f2318;
+  --green-800: #1a3a28;
+  --green-700: #1f4d33;
+  --green-600: #2d6a46;
+  --green-500: #3a8a5a;
+  --green-400: #4fad73;
+  --green-100: #e8f5ee;
+  --green-50:  #f2faf5;
+
+  --cream:     #f7f4ef;
+  --white:     #ffffff;
+  --grey-100:  #f0efed;
+  --grey-200:  #e0deda;
+  --grey-400:  #a8a49e;
+  --grey-600:  #6b6760;
+  --grey-900:  #1c1b19;
+
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body:    'Inter', sans-serif;
+
+  --radius-sm:  8px;
+  --radius-md:  14px;
+  --radius-lg:  20px;
+  --radius-xl:  28px;
+
+  --shadow-sm: 0 1px 4px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.14);
+
+  --nav-height: 72px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--cream);
+  color: var(--grey-900);
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+a { text-decoration: none; color: inherit; }
+img { display: block; max-width: 100%; }
+button { font-family: var(--font-body); cursor: pointer; border: none; background: none; }

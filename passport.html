@@ -1,0 +1,353 @@
+<!-- Green PWA | Passport — Timeline, Map, Stats -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a3a28" />
+  <title>Green – Passport</title>
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/pages/passport.css" />
+</head>
+<body>
+
+  <div class="page" id="page-passport">
+
+    <!-- HEADER -->
+    <header class="passport-header">
+      <h1 class="page-title">Passport</h1>
+      <a href="#" class="icon-btn" aria-label="Expand">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </a>
+    </header>
+
+    <!-- TABS -->
+    <div class="passport-tabs">
+      <button class="passport-tab active" data-tab="timeline">Timeline</button>
+      <button class="passport-tab" data-tab="map">Map</button>
+      <button class="passport-tab" data-tab="stats">Stats</button>
+    </div>
+
+    <!-- TIMELINE TAB -->
+    <main class="passport-main" id="tab-timeline">
+
+      <!-- 2024 -->
+      <div class="year-group">
+        <h2 class="year-label">2024</h2>
+        <div class="timeline">
+
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <a href="course.html" class="timeline-card">
+              <div class="timeline-info">
+                <span class="timeline-course">Royal Birkdale</span>
+                <span class="timeline-date">16 May 2024</span>
+              </div>
+              <div class="timeline-score">
+                <span class="score-num">83</span>
+                <span class="score-diff positive">+11</span>
+              </div>
+            </a>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <a href="course.html" class="timeline-card">
+              <div class="timeline-info">
+                <span class="timeline-course">St Andrews (Old Course)</span>
+                <span class="timeline-date">12 May 2024</span>
+              </div>
+              <div class="timeline-score">
+                <span class="score-num">79</span>
+                <span class="score-diff positive">+7</span>
+              </div>
+            </a>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <a href="course.html" class="timeline-card">
+              <div class="timeline-info">
+                <span class="timeline-course">Sunningdale</span>
+                <span class="timeline-date">4 May 2024</span>
+              </div>
+              <div class="timeline-score">
+                <span class="score-num">87</span>
+                <span class="score-diff positive">+15</span>
+              </div>
+            </a>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 2023 -->
+      <div class="year-group">
+        <h2 class="year-label">2023</h2>
+        <div class="timeline">
+
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <a href="course.html" class="timeline-card">
+              <div class="timeline-info">
+                <span class="timeline-course">Royal Liverpool</span>
+                <span class="timeline-date">22 Oct 2023</span>
+              </div>
+              <div class="timeline-score">
+                <span class="score-num">81</span>
+                <span class="score-diff positive">+9</span>
+              </div>
+            </a>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <a href="course.html" class="timeline-card">
+              <div class="timeline-info">
+                <span class="timeline-course">Lytham St Annes</span>
+                <span class="timeline-date">15 Aug 2023</span>
+              </div>
+              <div class="timeline-score">
+                <span class="score-num">82</span>
+                <span class="score-diff positive">+10</span>
+              </div>
+            </a>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <a href="course.html" class="timeline-card">
+              <div class="timeline-info">
+                <span class="timeline-course">Formby</span>
+                <span class="timeline-date">3 Jun 2023</span>
+              </div>
+              <div class="timeline-score">
+                <span class="score-num">84</span>
+                <span class="score-diff positive">+12</span>
+              </div>
+            </a>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 2022 -->
+      <div class="year-group">
+        <h2 class="year-label">2022</h2>
+        <div class="timeline">
+
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <a href="course.html" class="timeline-card">
+              <div class="timeline-info">
+                <span class="timeline-course">Woodhall Spa</span>
+                <span class="timeline-date">18 Sep 2022</span>
+              </div>
+              <div class="timeline-score">
+                <span class="score-num">86</span>
+                <span class="score-diff positive">+14</span>
+              </div>
+            </a>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <a href="course.html" class="timeline-card">
+              <div class="timeline-info">
+                <span class="timeline-course">Ganton Golf Club</span>
+                <span class="timeline-date">2 Jul 2022</span>
+              </div>
+              <div class="timeline-score">
+                <span class="score-num">85</span>
+                <span class="score-diff positive">+13</span>
+              </div>
+            </a>
+          </div>
+
+        </div>
+      </div>
+
+    </main>
+
+    <!-- MAP TAB -->
+    <main class="passport-main hidden" id="tab-map">
+      <div class="map-toggle">
+        <button class="map-toggle-btn active">Courses</button>
+        <button class="map-toggle-btn">Counties</button>
+      </div>
+
+      <div class="passport-map-card">
+        <svg viewBox="0 0 200 300" fill="none" xmlns="http://www.w3.org/2000/svg" class="passport-uk-shape">
+          <path d="M100 20 C80 18 60 30 55 50 C48 70 50 85 45 100 C40 118 30 125 28 140 C25 158 35 170 40 185 C45 200 42 215 50 228 C58 242 75 248 90 252 C105 256 118 250 128 240 C140 228 145 210 148 195 C152 178 150 162 155 148 C162 130 172 120 170 102 C168 85 158 75 155 58 C152 42 140 25 120 20 Z"
+                fill="#c8e6d4" stroke="var(--green-400)" stroke-width="1.5"/>
+          <path d="M100 20 C90 10 75 8 68 20 C62 30 65 42 70 50 C78 38 90 28 100 20 Z"
+                fill="#a8d8b8" stroke="var(--green-400)" stroke-width="1"/>
+          <circle cx="95" cy="180" r="6" fill="var(--green-700)" opacity="0.9"/>
+          <circle cx="110" cy="160" r="5" fill="var(--green-700)" opacity="0.9"/>
+          <circle cx="85" cy="165" r="4" fill="var(--green-600)" opacity="0.7"/>
+          <circle cx="100" cy="145" r="5" fill="var(--green-700)" opacity="0.8"/>
+          <circle cx="88" cy="130" r="4" fill="var(--green-600)" opacity="0.7"/>
+          <circle cx="78" cy="90" r="5" fill="var(--green-700)" opacity="0.9"/>
+          <circle cx="92" cy="75" r="4" fill="var(--green-600)" opacity="0.7"/>
+          <circle cx="105" cy="195" r="4" fill="var(--green-600)" opacity="0.7"/>
+          <circle cx="120" cy="175" r="5" fill="var(--green-700)" opacity="0.8"/>
+          <circle cx="70" cy="110" r="4" fill="var(--green-600)" opacity="0.6"/>
+          <circle cx="115" cy="140" r="3" fill="var(--green-500)" opacity="0.6"/>
+          <circle cx="85" cy="55" r="4" fill="var(--green-600)" opacity="0.7"/>
+        </svg>
+      </div>
+
+      <div class="map-stat-row">
+        <div class="map-stat">
+          <span class="map-stat-num">127</span>
+          <span class="map-stat-label">Courses Played</span>
+        </div>
+        <div class="map-stat">
+          <span class="map-stat-num">19</span>
+          <span class="map-stat-label">Counties</span>
+        </div>
+        <div class="map-stat">
+          <span class="map-stat-num">12%</span>
+          <span class="map-stat-label">UK Completed</span>
+        </div>
+      </div>
+    </main>
+
+    <!-- STATS TAB -->
+    <main class="passport-main hidden" id="tab-stats">
+
+      <div class="stats-grid">
+
+        <div class="stat-card wide">
+          <span class="stat-card-num">127</span>
+          <span class="stat-card-label">Courses Played</span>
+        </div>
+
+        <div class="stat-card">
+          <span class="stat-card-num">43</span>
+          <span class="stat-card-label">Rounds This Year</span>
+        </div>
+
+        <div class="stat-card">
+          <span class="stat-card-num">19</span>
+          <span class="stat-card-label">Counties Visited</span>
+        </div>
+
+        <div class="stat-card">
+          <span class="stat-card-num">74</span>
+          <span class="stat-card-label">Best Score</span>
+        </div>
+
+        <div class="stat-card">
+          <span class="stat-card-num">81</span>
+          <span class="stat-card-label">Average Score</span>
+        </div>
+
+        <div class="stat-card">
+          <span class="stat-card-num">12</span>
+          <span class="stat-card-label">Top 100 Played</span>
+        </div>
+
+        <div class="stat-card">
+          <span class="stat-card-num">28</span>
+          <span class="stat-card-label">Links Courses</span>
+        </div>
+
+        <div class="stat-card">
+          <span class="stat-card-num">7</span>
+          <span class="stat-card-label">Countries</span>
+        </div>
+
+      </div>
+
+      <div class="stats-section-title">Top Counties</div>
+      <div class="county-list">
+
+        <div class="county-item">
+          <div class="county-badge">42</div>
+          <div class="county-info">
+            <div class="county-name-row">
+              <span class="county-name">West Yorkshire</span>
+              <span class="county-pct">74%</span>
+            </div>
+            <div class="county-bar-track">
+              <div class="county-bar-fill" style="width: 74%"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="county-item">
+          <div class="county-badge">18</div>
+          <div class="county-info">
+            <div class="county-name-row">
+              <span class="county-name">Surrey</span>
+              <span class="county-pct">75%</span>
+            </div>
+            <div class="county-bar-track">
+              <div class="county-bar-fill" style="width: 75%"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="county-item">
+          <div class="county-badge">33</div>
+          <div class="county-info">
+            <div class="county-name-row">
+              <span class="county-name">Lancashire</span>
+              <span class="county-pct">67%</span>
+            </div>
+            <div class="county-bar-track">
+              <div class="county-bar-fill" style="width: 67%"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+      <a href="index.html" class="nav-item">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        <span>Home</span>
+      </a>
+      <a href="courses.html" class="nav-item">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <span>Courses</span>
+      </a>
+      <a href="#" class="nav-item nav-add">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+      </a>
+      <a href="passport.html" class="nav-item active">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <rect x="3" y="3" width="18" height="18" rx="3"/>
+          <path d="M8 7h8M8 12h8M8 17h5"/>
+        </svg>
+        <span>Passport</span>
+      </a>
+      <a href="profile.html" class="nav-item">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        <span>Profile</span>
+      </a>
+    </nav>
+
+  </div>
+
+  <script src="js/components/nav.js"></script>
+  <script src="js/pages/passport.js"></script>
+</body>
+</html>
