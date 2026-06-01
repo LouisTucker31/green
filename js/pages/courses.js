@@ -47,10 +47,10 @@ const CoursesPage = (() => {
   async function init() {
     assignElements();
     bindEvents();
+    await loadSearchIndex();
     await loadPage(1);
     initialised = true;
     tryNearby();
-    loadSearchIndex();
   }
 
   // ─── LOAD PAGE ──────────────────────────────────────────
@@ -82,6 +82,7 @@ const CoursesPage = (() => {
           allClubs         = data;
           allCoursesLoaded = true;
           console.log(`Search index: ${allClubs.length} clubs from cache`);
+          if (isSearching && searchQuery) doSearch(searchQuery);
           return;
         }
       }

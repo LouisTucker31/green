@@ -2,7 +2,7 @@
 
 /* HEADER */
 .courses-header {
-  padding: 56px 20px 12px;
+  padding: 44px 20px 12px;
 }
 
 /* SEARCH */
@@ -26,7 +26,7 @@
   border: none;
   outline: none;
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: 16px;
   color: var(--grey-900);
   background: transparent;
 }

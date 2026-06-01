@@ -5,9 +5,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 56px 20px 12px;
+  padding: 44px 20px 12px;
 }
-
 .home-logo {
   font-family: var(--font-display);
   font-size: 32px;

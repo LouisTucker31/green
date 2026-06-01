@@ -14,7 +14,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 56px 20px 12px;
+  padding: 44px 20px 12px;
 }
 
 /* ─── SHARED PAGE TITLE ─── */
@@ -99,14 +99,13 @@
   transform: translateX(-50%);
   width: 100%;
   max-width: 430px;
-  height: var(--nav-height);
+  height: calc(var(--nav-height) + env(safe-area-inset-bottom));
   background: var(--white);
   border-top: 1px solid var(--grey-200);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-around;
-  padding: 0 8px;
-  padding-bottom: env(safe-area-inset-bottom);
+  padding: 12px 8px 0;
   z-index: 100;
 }
 
@@ -142,6 +141,6 @@
   align-items: center;
   justify-content: center;
   color: var(--white) !important;
-  margin-bottom: 8px;
+  margin-top: -14px;
   box-shadow: 0 4px 14px rgba(29, 74, 51, 0.4);
 }
