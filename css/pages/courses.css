@@ -248,6 +248,7 @@
 }
 
 .load-more-wrap.hidden { display: none; }
+.courses-section.hidden { display: none; }
 
 .load-more-btn {
   padding: 10px 28px;

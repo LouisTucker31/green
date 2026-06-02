@@ -1,70 +1,49 @@
 // Green PWA | Page — course browser
+// Loads from static js/data/courses.json — no API needed
 
 const CoursesPage = (() => {
 
-  // ─── STATE ──────────────────────────────────────────────
-  let loadedClubs      = [];
-  let allClubs         = [];
-  let currentFilter    = 'all';
-  let searchQuery      = '';
-  let currentPage      = 1;
-  let totalPages       = 1;
-  let isSearching      = false;
-  let allCoursesLoaded = false;
-  let initialised      = false;
+  // ─── STATE ──────────────────────────────────────────────────────────────
+  let allClubs      = [];   // full list from static JSON
+  let currentFilter = 'all';
+  let searchQuery   = '';
+  let currentPage   = 1;
+  const PAGE_SIZE   = 50;
 
-  // ─── CACHE ──────────────────────────────────────────────
-  const SEARCH_INDEX_KEY = 'green_search_index';
-  const SEARCH_INDEX_TTL = 7 * 24 * 60 * 60 * 1000;
+  // ─── ELEMENTS ───────────────────────────────────────────────────────────
+  const searchInput   = document.getElementById('search-input');
+  const searchClear   = document.getElementById('search-clear');
+  const loadingState  = document.getElementById('loading-state');
+  const errorState    = document.getElementById('error-state');
+  const emptyState    = document.getElementById('empty-state');
+  const emptyMessage  = document.getElementById('empty-message');
+  const nearbySection = document.getElementById('nearby-section');
+  const allSection    = document.getElementById('all-section');
+  const allTitle      = document.getElementById('all-section-title');
+  const courseCount   = document.getElementById('course-count');
+  const alphaGroups   = document.getElementById('alpha-groups');
+  const nearbyList    = document.getElementById('nearby-list');
+  const retryBtn      = document.getElementById('retry-btn');
+  const filterTabs    = document.querySelectorAll('.filter-tab');
+  const loadMoreWrap  = document.getElementById('load-more-wrap');
+  const loadMoreBtn   = document.getElementById('load-more-btn');
 
-  // ─── ELEMENTS ───────────────────────────────────────────
-  // Declared as let and assigned in init() to ensure DOM is ready
-  let searchInput, searchClear, loadingState, errorState;
-  let emptyState, emptyMessage, nearbySection, allSection;
-  let allTitle, courseCount, alphaGroups, nearbyList;
-  let retryBtn, filterTabs, loadMoreWrap, loadMoreBtn;
-
-  function assignElements() {
-    searchInput   = document.getElementById('search-input');
-    searchClear   = document.getElementById('search-clear');
-    loadingState  = document.getElementById('loading-state');
-    errorState    = document.getElementById('error-state');
-    emptyState    = document.getElementById('empty-state');
-    emptyMessage  = document.getElementById('empty-message');
-    nearbySection = document.getElementById('nearby-section');
-    allSection    = document.getElementById('all-section');
-    allTitle      = document.getElementById('all-section-title');
-    courseCount   = document.getElementById('course-count');
-    alphaGroups   = document.getElementById('alpha-groups');
-    nearbyList    = document.getElementById('nearby-list');
-    retryBtn      = document.getElementById('retry-btn');
-    filterTabs    = document.querySelectorAll('.filter-tab');
-    loadMoreWrap  = document.getElementById('load-more-wrap');
-    loadMoreBtn   = document.getElementById('load-more-btn');
-  }
-
-  // ─── INIT ───────────────────────────────────────────────
-  async function init() {
-    assignElements();
+  // ─── INIT ────────────────────────────────────────────────────────────────
+  function init() {
     bindEvents();
-    await loadSearchIndex();
-    await loadPage(1);
-    initialised = true;
+    loadCourses();
     tryNearby();
   }
 
-  // ─── LOAD PAGE ──────────────────────────────────────────
-  async function loadPage(page) {
+  // ─── LOAD FROM STATIC JSON ───────────────────────────────────────────────
+  function loadCourses() {
     showLoading(true);
     try {
-      const data     = await API.Clubs.list({ per_page: 50, page });
-      totalPages     = data.total_pages;
-      currentPage    = page;
-      const newClubs = data.clubs.map(c => API.normalise(c));
-      loadedClubs    = page === 1 ? newClubs : loadedClubs.concat(newClubs);
+      allClubs = COURSES_DATA.data.sort((a, b) => a.name.localeCompare(b.name));
+      console.log(`Loaded ${allClubs.length} clubs from static data`);
       showLoading(false);
-      loadMoreWrap.classList.toggle('hidden', currentPage >= totalPages || currentFilter !== 'all');
       render();
+      updateLoadMore();
     } catch (e) {
       console.error(e);
       showLoading(false);
@@ -72,129 +51,104 @@ const CoursesPage = (() => {
     }
   }
 
-  // ─── SEARCH INDEX ───────────────────────────────────────
-  async function loadSearchIndex() {
-    try {
-      const raw = localStorage.getItem(SEARCH_INDEX_KEY);
-      if (raw) {
-        const { data, timestamp } = JSON.parse(raw);
-        if (Date.now() - timestamp < SEARCH_INDEX_TTL) {
-          allClubs         = data;
-          allCoursesLoaded = true;
-          console.log(`Search index: ${allClubs.length} clubs from cache`);
-          if (isSearching && searchQuery) doSearch(searchQuery);
-          return;
-        }
-      }
-    } catch (e) {}
-
-    try {
-      const first = await API.Clubs.list({ per_page: 50, page: 1 });
-      const pages = first.total_pages;
-      let index   = first.clubs.map(c => API.normalise(c));
-
-      for (let page = 2; page <= pages; page++) {
-        await new Promise(r => setTimeout(r, 1500));
-        try {
-          const data = await API.Clubs.list({ per_page: 50, page });
-          index = index.concat(data.clubs.map(c => API.normalise(c)));
-          console.log(`Search index: ${index.length} clubs (${page}/${pages})`);
-        } catch (e) {
-          if (e.message && e.message.includes('429')) {
-            await new Promise(r => setTimeout(r, 5000));
-            page--;
-          }
-        }
-      }
-
-      index.sort((a, b) => a.name.localeCompare(b.name));
-      allClubs         = index;
-      allCoursesLoaded = true;
-      console.log(`Search index complete: ${allClubs.length} clubs`);
-
-      localStorage.setItem(SEARCH_INDEX_KEY, JSON.stringify({
-        data: allClubs, timestamp: Date.now(),
-      }));
-
-      if (isSearching && searchQuery) doSearch(searchQuery);
-
-    } catch (e) {
-      console.error('Search index error:', e);
-    }
-  }
-
-  // ─── NEARBY ─────────────────────────────────────────────
+  // ─── NEARBY ──────────────────────────────────────────────────────────────
   function tryNearby() {
     if (!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition(async pos => {
-      try {
-        const { latitude, longitude } = pos.coords;
-        const data  = await API.Clubs.nearby(latitude, longitude, { per_page: 5 });
-        const clubs = (data.clubs || data).slice(0, 5).map(c => API.normalise(c));
-        if (!clubs.length) return;
-        nearbyList.innerHTML = clubs.map(c => courseItemHTML(c)).join('');
-        nearbySection.classList.remove('hidden');
-      } catch (e) {}
+    navigator.geolocation.getCurrentPosition(pos => {
+      const { latitude, longitude } = pos.coords;
+      // Find nearest courses from allClubs using haversine approximation
+      const withDist = allClubs
+        .filter(c => c.lat && c.lng)
+        .map(c => {
+          const dlat = c.lat - latitude;
+          const dlng = c.lng - longitude;
+          return { ...c, dist: dlat * dlat + dlng * dlng };
+        })
+        .sort((a, b) => a.dist - b.dist)
+        .slice(0, 5);
+
+      if (!withDist.length) return;
+      nearbyList.innerHTML = withDist.map(c => courseItemHTML(c)).join('');
+      if (currentFilter === 'all') nearbySection.classList.remove('hidden');
     }, () => {});
   }
 
-  // ─── RENDER ─────────────────────────────────────────────
+  // ─── RENDER ───────────────────────────────────────────────────────────────
   function render() {
-    // Always hide both first — no exceptions
-    if (allSection) allSection.classList.add('hidden');
-    if (emptyState) emptyState.classList.add('hidden');
-    if (alphaGroups) alphaGroups.innerHTML = '';
+    allSection.classList.add('hidden');
+    emptyState.classList.add('hidden');
+    nearbySection.classList.add('hidden');
+    loadMoreWrap.classList.add('hidden');
 
-    const playedIds    = DB.Rounds.getPlayedCourseIds();
+    const playedIds    = DB.Played.getAll();
     const wishlistIds  = DB.Wishlist.getAll();
     const favouriteIds = DB.Favourites.getAll();
 
-    // Apply filter
+    // Filter by tab
     let pool;
     if (currentFilter === 'played') {
-      pool = loadedClubs.filter(c => playedIds.includes(c.id));
+      pool = allClubs.filter(c => playedIds.includes(c.id));
     } else if (currentFilter === 'wishlist') {
-      pool = loadedClubs.filter(c => wishlistIds.includes(c.id));
+      pool = allClubs.filter(c => wishlistIds.includes(c.id));
     } else if (currentFilter === 'favourite') {
-      pool = loadedClubs.filter(c => favouriteIds.includes(c.id));
+      pool = allClubs.filter(c => favouriteIds.includes(c.id));
     } else {
-      pool = loadedClubs.slice();
+      pool = allClubs.slice();
     }
 
-    // Hide section header and nearby on filter tabs
-    const sectionHeader = allSection.querySelector('.section-header');
-    if (sectionHeader) sectionHeader.style.display = currentFilter === 'all' ? '' : 'none';
-    if (nearbySection) nearbySection.style.display = currentFilter === 'all' ? '' : 'none';
+    // Filter by search
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      pool = pool.filter(c =>
+        c.name.toLowerCase().includes(q) ||
+        (c.city  && c.city.toLowerCase().includes(q)) ||
+        (c.county && c.county.toLowerCase().includes(q))
+      );
+    }
 
     // Empty state
-    if (pool.length === 0) {
+    if (!pool.length) {
+      alphaGroups.innerHTML = '';
+      allSection.classList.add('hidden');
+      nearbySection.classList.add('hidden');
+      loadMoreWrap.classList.add('hidden');
       emptyState.classList.remove('hidden');
-      const messages = {
-        played:    "You haven't logged any rounds yet.",
-        wishlist:  "Your wishlist is empty.",
-        favourite: "You haven't favourited any courses yet.",
-        all:       "No courses found.",
-      };
-      emptyMessage.textContent = messages[currentFilter] || "No courses found.";
+      if (searchQuery) {
+        emptyMessage.textContent = `No courses found for "${searchQuery}"`;
+      } else {
+        const messages = {
+          played:    "You haven't logged any rounds yet.",
+          wishlist:  "Your wishlist is empty.",
+          favourite: "You haven't favourited any courses yet.",
+          all:       "No courses found.",
+        };
+        emptyMessage.textContent = messages[currentFilter] || 'No courses found.';
+      }
       return;
     }
 
-    // Show results
     allSection.classList.remove('hidden');
-    if (currentFilter === 'all') {
-      allTitle.textContent    = 'All Courses';
-      courseCount.textContent = `${loadedClubs.length} of 2,666`;
-      allTitle.style.display  = '';
-      courseCount.style.display = '';
+
+    // Title + count
+    if (searchQuery) {
+      allTitle.textContent    = 'Results';
+      courseCount.textContent = `${pool.length} course${pool.length !== 1 ? 's' : ''}`;
+    } else if (currentFilter !== 'all') {
+      allTitle.textContent    = currentFilter.charAt(0).toUpperCase() + currentFilter.slice(1);
+      courseCount.textContent = `${pool.length} course${pool.length !== 1 ? 's' : ''}`;
     } else {
-      allTitle.style.display    = 'none';
-      courseCount.style.display = 'none';
+      allTitle.textContent    = 'All Courses';
+      courseCount.textContent = `${allClubs.length} courses`;
     }
 
-    // Alphabetical groups for all, flat list for filters
-    if (currentFilter === 'all') {
+    // Paginate for 'all' view (not for search/filters — show all)
+    const showPaginated = !searchQuery && currentFilter === 'all';
+    const display = showPaginated ? pool.slice(0, currentPage * PAGE_SIZE) : pool;
+
+    // Alphabetical groups for all/paginated, flat list for search/filter
+    if (currentFilter === 'all' && !searchQuery) {
       const groups = {};
-      pool.forEach(c => {
+      display.forEach(c => {
         const letter = c.name[0].toUpperCase();
         if (!groups[letter]) groups[letter] = [];
         groups[letter].push(c);
@@ -210,53 +164,15 @@ const CoursesPage = (() => {
     } else {
       alphaGroups.innerHTML = `
         <div class="course-list">
-          ${pool.map(c => courseItemHTML(c)).join('')}
+          ${display.map(c => courseItemHTML(c)).join('')}
         </div>
       `;
     }
+
+    updateLoadMore(pool.length);
   }
 
-  // ─── SEARCH ─────────────────────────────────────────────
-  function doSearch(query) {
-    if (!query) {
-      isSearching = false;
-      loadMoreWrap.classList.toggle('hidden', currentPage >= totalPages);
-      render();
-      return;
-    }
-
-    isSearching = true;
-    loadMoreWrap.classList.add('hidden');
-    allSection.classList.add('hidden');
-    emptyState.classList.add('hidden');
-
-    const source = allCoursesLoaded ? allClubs : loadedClubs;
-    const q      = query.toLowerCase();
-    const results = source.filter(c =>
-      c.name.toLowerCase().includes(q) ||
-      c.city.toLowerCase().includes(q) ||
-      c.county.toLowerCase().includes(q)
-    );
-
-    if (!results.length) {
-      emptyState.classList.remove('hidden');
-      emptyMessage.textContent = allCoursesLoaded
-        ? `No courses found for "${query}"`
-        : `Still loading search index — try again shortly`;
-      return;
-    }
-
-    allSection.classList.remove('hidden');
-    allTitle.textContent    = 'Results';
-    courseCount.textContent = `${results.length} course${results.length !== 1 ? 's' : ''}`;
-    alphaGroups.innerHTML   = `
-      <div class="course-list">
-        ${results.map(c => courseItemHTML(c)).join('')}
-      </div>
-    `;
-  }
-
-  // ─── COURSE ITEM HTML ────────────────────────────────────
+  // ─── COURSE ITEM HTML ────────────────────────────────────────────────────
   function courseItemHTML(club) {
     const played     = DB.Rounds.hasPlayed(club.id);
     const wishlisted = DB.Wishlist.has(club.id);
@@ -277,13 +193,14 @@ const CoursesPage = (() => {
     const typeLabel   = club.courseType
       ? `<span class="course-type">${club.courseType}</span>`
       : '';
+    const location = [club.city, club.county].filter(Boolean).join(', ');
 
     return `
       <a href="course.html?id=${club.id}" class="course-item">
         <div class="course-img-placeholder"></div>
         <div class="course-info">
           <span class="course-name">${club.name}</span>
-          <span class="course-location">${[club.city, club.county].filter(Boolean).join(', ')}</span>
+          <span class="course-location">${location}</span>
           ${typeLabel}
         </div>
         <div class="course-status ${statusClass}">
@@ -293,7 +210,18 @@ const CoursesPage = (() => {
     `;
   }
 
-  // ─── EVENTS ─────────────────────────────────────────────
+  // ─── LOAD MORE ────────────────────────────────────────────────────────────
+  function updateLoadMore(poolSize) {
+    // Only show load more when browsing all courses (not searching/filtering)
+    if (searchQuery || currentFilter !== 'all') {
+      loadMoreWrap.classList.add('hidden');
+      return;
+    }
+    const shown = currentPage * PAGE_SIZE;
+    loadMoreWrap.classList.toggle('hidden', shown >= allClubs.length);
+  }
+
+  // ─── EVENTS ──────────────────────────────────────────────────────────────
   function bindEvents() {
     let searchTimeout;
 
@@ -301,20 +229,19 @@ const CoursesPage = (() => {
       searchQuery = e.target.value.trim();
       searchClear.classList.toggle('hidden', !searchQuery);
       clearTimeout(searchTimeout);
-      searchTimeout = setTimeout(() => doSearch(searchQuery), 300);
+      searchTimeout = setTimeout(render, 200);
     });
 
     searchClear.addEventListener('click', () => {
       searchInput.value = '';
       searchQuery       = '';
-      isSearching       = false;
       searchClear.classList.add('hidden');
-      loadMoreWrap.classList.toggle('hidden', currentPage >= totalPages);
       render();
     });
 
     filterTabs.forEach(tab => {
       tab.addEventListener('click', () => {
+        console.log('tab clicked:', tab.dataset.filter, 'current:', currentFilter);
         if (tab.dataset.filter === currentFilter) return;
         filterTabs.forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
@@ -325,44 +252,33 @@ const CoursesPage = (() => {
 
     retryBtn.addEventListener('click', () => {
       showError(false);
-      loadPage(1);
+      loadCourses();
     });
 
     loadMoreBtn.addEventListener('click', () => {
-      if (currentPage < totalPages) loadPage(currentPage + 1);
+      currentPage++;
+      render();
     });
   }
 
-  // ─── PUBLIC ─────────────────────────────────────────────
-  function setFilter(filter) {
-    currentFilter = filter;
-    loadMoreWrap.classList.toggle('hidden', currentFilter !== 'all' || currentPage >= totalPages);
-    render();
-  }
-
-  // ─── HELPERS ────────────────────────────────────────────
+  // ─── HELPERS ─────────────────────────────────────────────────────────────
   function showLoading(show) {
-    if (loadingState) loadingState.classList.toggle('hidden', !show);
+    loadingState.classList.toggle('hidden', !show);
+    if (show) {
+      allSection.classList.add('hidden');
+      emptyState.classList.add('hidden');
+    }
   }
 
   function showError(show) {
     errorState.classList.toggle('hidden', !show);
   }
 
+  // ─── START ────────────────────────────────────────────────────────────────
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
     init();
   }
 
-  return { setFilter };
-
 })();
-
-function GreenCourses() {}
-GreenCourses.setFilter = function(filter) {
-  const tabs = document.querySelectorAll('.filter-tab');
-  tabs.forEach(t => t.classList.remove('active'));
-  document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
-  CoursesPage.setFilter(filter);
-};

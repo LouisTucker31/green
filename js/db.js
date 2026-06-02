@@ -110,6 +110,21 @@ const DB = (() => {
 
   };
 
+// ─── PLAYED ──────────────────────────────────────────────────────────────
+  const Played = {
+    getAll() { return read('green_played') || []; },
+    has(courseId) { return Played.getAll().includes(courseId); },
+    add(courseId) {
+      const list = Played.getAll();
+      if (!list.includes(courseId)) { list.push(courseId); write('green_played', list); }
+    },
+    remove(courseId) { write('green_played', Played.getAll().filter(id => id !== courseId)); },
+    toggle(courseId) {
+      Played.has(courseId) ? Played.remove(courseId) : Played.add(courseId);
+      return Played.has(courseId);
+    },
+  };
+
   // ─── WISHLIST ────────────────────────────────────────────
   // Stored as a Set of courseIds
   //
@@ -289,6 +304,6 @@ const DB = (() => {
   }
 
   // ─── PUBLIC API ──────────────────────────────────────────
-  return { Rounds, Wishlist, Favourites, Profile, Stats, Settings, debug };
+  return { Rounds, Played, Wishlist, Favourites, Profile, Stats, Settings, debug };
 
 })();

@@ -165,6 +165,13 @@
 .passport-uk-shape {
   height: 280px;
   width: auto;
+  display: block;
+}
+
+.passport-uk-shape .land {
+  fill: #d4e8dc;
+  stroke: #6aad8a;
+  stroke-width: 0.5;
 }
 
 .map-stat-row {
