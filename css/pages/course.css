@@ -352,7 +352,7 @@
 .sheet-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.4);
+  background: transparent;
   z-index: 200;
   opacity: 0;
   transition: opacity 0.3s;
@@ -376,6 +376,7 @@
   z-index: 201;
   transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
   padding-bottom: env(safe-area-inset-bottom);
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.12);
 }
 
 .bottom-sheet.visible {
@@ -454,6 +455,7 @@
   outline: none;
   transition: border-color 0.2s;
   -webkit-appearance: none;
+  min-height: 48px;
 }
 
 .form-input:focus {

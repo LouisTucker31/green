@@ -29,7 +29,7 @@ const PassportPage = (() => {
     const content = document.getElementById('timeline-content');
 
     if (!rounds.length) {
-      empty.classList.remove('hidden');
+      content.innerHTML = '<p style="color:var(--grey-400);font-size:14px;padding:16px 0;">No rounds logged yet. Head to a course to log your first round.</p>';
       return;
     }
 
