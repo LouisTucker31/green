@@ -37,27 +37,7 @@ function renderMap() {
     if (!dots) return;
     dots.innerHTML = '';
 
-    const played = COURSES_DATA.data.filter(c => playedIds.includes(c.id) && c.lat && c.lng);
-
-    // Match the ukLow.svg viewBox: 447.15 -2.5 712.7 856
-    const minLat = 49.19, maxLat = 60.38;
-    const minLng = -7.70, maxLng = 1.73;
-
-    // Derived from known point: London (51.5, -0.1) -> SVG ~(820, 680)
-    const svgMinX = 650, svgMaxX = 1130;
-    const svgMinY = 15,  svgMaxY = 820;
-
-    played.forEach(c => {
-      const x = svgMinX + ((c.lng - minLng) / (maxLng - minLng)) * (svgMaxX - svgMinX);
-      const y = svgMaxY - ((c.lat - minLat) / (maxLat - minLat)) * (svgMaxY - svgMinY);
-      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      circle.setAttribute('cx', x.toFixed(1));
-      circle.setAttribute('cy', y.toFixed(1));
-      circle.setAttribute('r', '6');
-      circle.setAttribute('fill', 'var(--green-600)');
-      circle.setAttribute('opacity', '0.85');
-      dots.appendChild(circle);;
-    });
+    renderMapDots('course-dots', playedIds);
   }
 
   function renderRecentRounds() {

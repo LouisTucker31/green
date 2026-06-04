@@ -12,14 +12,14 @@ a, button {
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@300;400;500;600&display=swap');
 
 :root {
-  --green-900: #0f2318;
+  --green-900: #0d1f16;
   --green-800: #1a3a28;
-  --green-700: #1f4d33;
-  --green-600: #2d6a46;
-  --green-500: #3a8a5a;
-  --green-400: #4fad73;
-  --green-100: #e8f5ee;
-  --green-50:  #f2faf5;
+  --green-700: #1e4d33;
+  --green-600: #2d6a4a;
+  --green-500: #3d8b5e;
+  --green-400: #5aad7a;
+  --green-100: #d4e8dc;
+  --green-50:  #edf5f0;
 
   --cream:     #f7f4ef;
   --white:     #ffffff;
@@ -33,13 +33,12 @@ a, button {
   --font-body:    'Inter', sans-serif;
 
   --radius-sm:  8px;
-  --radius-md:  14px;
-  --radius-lg:  20px;
-  --radius-xl:  28px;
+  --radius-md:  12px;
+  --radius-lg:  16px;
+  --radius-xl:  24px;
 
-  --shadow-sm: 0 1px 4px rgba(0,0,0,0.06);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,0.14);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.10);
 
   --nav-height: 84px;
 }
@@ -57,5 +56,6 @@ body {
 }
 
 a { text-decoration: none; color: inherit; }
+.hidden { display: none !important; }
 img { display: block; max-width: 100%; }
 button { font-family: var(--font-body); cursor: pointer; border: none; background: none; }

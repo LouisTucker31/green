@@ -1,1 +1,209 @@
 <!-- Green PWA | Settings -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a3a28" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Green" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <title>Green – Settings</title>
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/pages/settings.css" />
+</head>
+<body>
+
+  <div class="page" id="page-settings">
+
+    <header class="settings-header">
+      <a href="profile.html" class="icon-btn" aria-label="Back">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </a>
+      <h1 class="page-title">Settings</h1>
+      <div style="width:40px"></div>
+    </header>
+
+    <main class="settings-main">
+
+      <!-- GOLF -->
+      <section class="settings-section">
+        <h2 class="settings-section-title">Golf</h2>
+        <div class="settings-card">
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <span class="settings-row-title">Distance units</span>
+              <span class="settings-row-sub">Used across courses and rounds</span>
+            </div>
+            <div class="units-toggle">
+              <button class="units-btn" id="units-yards" data-unit="yards">yards</button>
+              <button class="units-btn" id="units-metres" data-unit="metres">metres</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- NOTIFICATIONS -->
+      <section class="settings-section">
+        <h2 class="settings-section-title">Notifications</h2>
+        <div class="settings-card">
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <span class="settings-row-title">Round reminders</span>
+              <span class="settings-row-sub">Nudges to log your rounds</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="notif-rounds" />
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            </label>
+          </div>
+          <div class="settings-divider"></div>
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <span class="settings-row-title">New followers</span>
+              <span class="settings-row-sub">When someone follows you</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="notif-followers" />
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            </label>
+          </div>
+          <div class="settings-divider"></div>
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <span class="settings-row-title">Comments</span>
+              <span class="settings-row-sub">When someone comments on your rounds</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="notif-comments" />
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            </label>
+          </div>
+          <div class="settings-divider"></div>
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <span class="settings-row-title">Weekly summary</span>
+              <span class="settings-row-sub">Your week in golf, every Monday</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="notif-weekly" />
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- PRIVACY -->
+      <section class="settings-section">
+        <h2 class="settings-section-title">Privacy</h2>
+        <div class="settings-card">
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <span class="settings-row-title">Private profile</span>
+              <span class="settings-row-sub">Only approved followers see your rounds</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="privacy-private" />
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            </label>
+          </div>
+          <div class="settings-divider"></div>
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <span class="settings-row-title">Show handicap</span>
+              <span class="settings-row-sub">Visible on your public profile</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="privacy-handicap" />
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            </label>
+          </div>
+          <div class="settings-divider"></div>
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <span class="settings-row-title">Show scores</span>
+              <span class="settings-row-sub">Visible on your public rounds</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="privacy-scores" />
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- SOCIAL -->
+      <section class="settings-section">
+        <h2 class="settings-section-title">Social</h2>
+        <div class="settings-card">
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <span class="settings-row-title">Allow followers</span>
+              <span class="settings-row-sub">Let other golfers follow you</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="social-follow" />
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            </label>
+          </div>
+          <div class="settings-divider"></div>
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <span class="settings-row-title">Appear on leaderboards</span>
+              <span class="settings-row-sub">Show in county and national rankings</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="social-leaderboards" />
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            </label>
+          </div>
+          <div class="settings-divider"></div>
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <span class="settings-row-title">Appear in nearby golfers</span>
+              <span class="settings-row-sub">Discoverable by golfers near you</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="social-nearby" />
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- APP -->
+      <section class="settings-section">
+        <h2 class="settings-section-title">App</h2>
+        <div class="settings-card">
+          <div class="settings-row">
+            <div class="settings-row-label">
+              <span class="settings-row-title">Version</span>
+            </div>
+            <span class="settings-row-value">1.0.0</span>
+          </div>
+          <div class="settings-divider"></div>
+          <div class="settings-row">
+            <button class="settings-danger-btn" id="clear-data-btn">Clear all data</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <script src="js/data/courses-data.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/pages/settings.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
+</body>
+</html>

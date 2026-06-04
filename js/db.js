@@ -273,6 +273,16 @@ const DB = (() => {
     get() {
       return read(KEYS.SETTINGS) || {
         units: 'yards',
+        notifications_rounds: false,
+        notifications_followers: false,
+        notifications_comments: false,
+        notifications_weekly: false,
+        privacy_private: false,
+        privacy_show_handicap: true,
+        privacy_show_scores: true,
+        social_allow_follow: true,
+        social_leaderboards: true,
+        social_nearby: true,
       };
     },
 

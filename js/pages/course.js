@@ -241,6 +241,9 @@ const CoursePage = (() => {
       const deleteBtn = e.target.closest('.round-card-delete');
       if (deleteBtn) {
         DB.Rounds.remove(deleteBtn.dataset.roundId);
+        if (DB.Rounds.getForCourse(course.id).length === 0) {
+          DB.Played.remove(course.id);
+        }
         renderToggles();
         renderRounds();
         return;

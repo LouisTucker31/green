@@ -2,19 +2,96 @@
 
 const ProfilePage = (() => {
 
-  const PROFILE_KEY = 'green_profile';
-
-  function loadProfile() {
-    const raw = localStorage.getItem(PROFILE_KEY);
-    return raw ? JSON.parse(raw) : {};
+  function renderAvatar(profile) {
+    const placeholder = document.getElementById('avatar-placeholder');
+    const img         = document.getElementById('avatar-img');
+    if (profile.avatar) {
+      img.src = profile.avatar;
+      img.classList.remove('hidden');
+      placeholder.classList.add('hidden');
+    } else {
+      img.classList.add('hidden');
+      placeholder.classList.remove('hidden');
+    }
   }
 
-  function saveProfile(data) {
-    localStorage.setItem(PROFILE_KEY, JSON.stringify(data));
+  function bindAvatar() {
+    const wrap      = document.getElementById('avatar-wrap');
+    const input     = document.getElementById('avatar-input');
+    const overlay   = document.getElementById('avatar-overlay');
+    const sheet     = document.getElementById('avatar-sheet');
+    const changeBtn = document.getElementById('avatar-change-btn');
+    const removeBtn = document.getElementById('avatar-remove-btn');
+
+    function openSheet() {
+      overlay.classList.remove('hidden');
+      sheet.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          overlay.classList.add('visible');
+          sheet.classList.add('visible');
+        });
+      });
+    }
+
+    function closeSheet() {
+      overlay.classList.remove('visible');
+      sheet.classList.remove('visible');
+      setTimeout(() => {
+        overlay.classList.add('hidden');
+        sheet.classList.add('hidden');
+      }, 350);
+    }
+
+    function processFile(file) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const size   = 200;
+          canvas.width  = size;
+          canvas.height = size;
+          const ctx = canvas.getContext('2d');
+          const min = Math.min(img.width, img.height);
+          const sx  = (img.width  - min) / 2;
+          const sy  = (img.height - min) / 2;
+          ctx.drawImage(img, sx, sy, min, min, 0, 0, size, size);
+          const base64 = canvas.toDataURL('image/jpeg', 0.8);
+          DB.Profile.save({ avatar: base64 });
+          renderAvatar(DB.Profile.get());
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    wrap.addEventListener('click', () => {
+      openSheet();
+    });
+
+    overlay.addEventListener('click', closeSheet);
+
+    changeBtn.addEventListener('click', () => {
+      closeSheet();
+      input.click();
+    });
+
+    removeBtn.addEventListener('click', () => {
+      closeSheet();
+      DB.Profile.save({ avatar: null });
+      renderAvatar(DB.Profile.get());
+    });
+
+    input.addEventListener('change', () => {
+      processFile(input.files[0]);
+      input.value = '';
+    });
   }
 
   function render() {
-    const profile       = loadProfile();
+    const profile       = DB.Profile.get();
     const playedIds     = DB.Played.getAll();
     const rounds        = DB.Rounds.getAll();
     const scores        = rounds.map(r => r.score).filter(s => s !== null);
@@ -22,6 +99,7 @@ const ProfilePage = (() => {
     const playedCourses = COURSES_DATA.data.filter(c => playedIds.includes(c.id));
     const counties      = new Set(playedCourses.map(c => c.county).filter(Boolean));
 
+    renderAvatar(profile);
     document.getElementById('profile-name').textContent      = profile.name       || 'Your Name';
     document.getElementById('profile-handle').textContent    = profile.handle     || '';
     document.getElementById('stat-courses').textContent      = playedIds.length;
@@ -87,7 +165,7 @@ const ProfilePage = (() => {
 
   // ─── MODAL ───────────────────────────────────────────────────────────────
   function openModal() {
-    const profile = loadProfile();
+    const profile = DB.Profile.get();
     const handleInput = document.getElementById('input-handle');
     document.getElementById('input-name').value        = profile.name       || '';
     handleInput.value                                  = profile.handle ? profile.handle.replace('@', '') : '';
@@ -127,13 +205,14 @@ const ProfilePage = (() => {
       homeCourse,
       handicap:   document.getElementById('input-handicap').value.trim(),
     };
-    saveProfile(data);
+    DB.Profile.save(data);
     closeModal();
     render();
   }
 
   function init() {
     render();
+    bindAvatar();
     bindCourseSearch();
     document.getElementById('edit-profile-btn').addEventListener('click', openModal);
     document.getElementById('edit-cancel-btn').addEventListener('click', closeModal);

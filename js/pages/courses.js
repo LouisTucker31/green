@@ -174,7 +174,7 @@ const CoursesPage = (() => {
 
   // ─── COURSE ITEM HTML ────────────────────────────────────────────────────
   function courseItemHTML(club) {
-    const played     = DB.Rounds.hasPlayed(club.id);
+    const played     = DB.Played.has(club.id);
     const wishlisted = DB.Wishlist.has(club.id);
 
     const statusIcon = played

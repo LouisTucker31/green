@@ -151,6 +151,12 @@
   <script src="js/data/courses-data.js"></script>
   <script src="js/db.js"></script>
   <script src="js/components/nav.js"></script>
+  <script src="js/components/map.js"></script>
   <script src="js/pages/passport.js"></script>
+<script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
 </body>
 </html>
