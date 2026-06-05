@@ -1,0 +1,186 @@
+<!-- Green PWA | Feed -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a3a28" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Green" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <title>Green – Feed</title>
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/pages/feed.css" />
+</head>
+<body>
+
+  <div class="page" id="page-feed">
+
+    <header class="page-header">
+      <h1 class="page-title">Feed</h1>
+      <button class="feed-new-btn" id="feed-new-btn" aria-label="New post">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+      </button>
+    </header>
+
+    <!-- TABS -->
+    <div class="feed-tabs">
+      <button class="feed-tab active" id="tab-following" data-tab="following">Following</button>
+      <button class="feed-tab" id="tab-discover" data-tab="discover">Discover</button>
+    </div>
+
+    <!-- FOLLOWING PANEL -->
+    <main class="feed-main" id="panel-following">
+
+      <!-- EMPTY STATE -->
+      <div class="feed-empty hidden" id="feed-empty">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--grey-200)" stroke-width="1.4">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        <p class="feed-empty-title">Nothing here yet</p>
+        <p class="feed-empty-sub">Follow people to see their rounds</p>
+        <p class="feed-empty-link" id="feed-discover-link">Find people</p>
+      </div>
+
+      <!-- CARD LIST -->
+      <div class="feed-list" id="feed-list"></div>
+
+    </main>
+
+    <!-- DISCOVER PANEL -->
+    <main class="feed-main hidden" id="panel-discover">
+
+      <!-- SEARCH BAR -->
+      <div class="discover-search-wrap">
+        <div class="discover-search-bar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input type="text" class="discover-search-input" id="discover-search-input" placeholder="Search by name or handle…" />
+          <button class="discover-search-clear hidden" id="discover-search-clear">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- PEOPLE RESULTS (shown when searching) -->
+      <div class="discover-people hidden" id="discover-people"></div>
+
+      <!-- DISCOVER FEED (shown when not searching) -->
+      <div class="feed-list" id="discover-list"></div>
+
+      <!-- DISCOVER EMPTY -->
+      <div class="feed-empty hidden" id="discover-empty">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--grey-200)" stroke-width="1.4">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <p class="feed-empty-title">No one found</p>
+        <p class="feed-empty-sub">Try a different name or handle</p>
+      </div>
+
+    </main>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+      <a href="index.html" class="nav-item">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        <span>Home</span>
+      </a>
+      <a href="courses.html" class="nav-item">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <span>Courses</span>
+      </a>
+      <a href="feed.html" class="nav-item nav-add">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+          <line x1="4" y1="22" x2="4" y2="15"/>
+        </svg>
+      </a>
+      <a href="passport.html" class="nav-item">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <rect x="3" y="3" width="18" height="18" rx="3"/>
+          <path d="M8 7h8M8 12h8M8 17h5"/>
+        </svg>
+        <span>Passport</span>
+      </a>
+      <a href="profile.html" class="nav-item">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        <span>Profile</span>
+      </a>
+    </nav>
+
+  </div>
+
+  <!-- ROUND PICKER SHEET -->
+  <div class="sheet-overlay hidden" id="picker-overlay"></div>
+  <div class="bottom-sheet hidden" id="picker-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <h2 class="sheet-title">Select a Round</h2>
+      <button class="sheet-close" id="picker-close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="picker-list" id="picker-list"></div>
+  </div>
+
+  <!-- COMPOSE SCREEN -->
+  <div class="compose-screen hidden" id="compose-screen">
+    <div class="compose-header">
+      <button class="compose-cancel" id="compose-cancel">Cancel</button>
+      <h2 class="compose-title">New Post</h2>
+      <button class="compose-post-btn" id="compose-post-btn">Post</button>
+    </div>
+    <div class="compose-body">
+      <div class="compose-round-info" id="compose-round-info"></div>
+      <div class="compose-photos-section">
+        <div class="compose-photos-grid" id="compose-photos-grid"></div>
+        <button class="compose-add-photo-btn" id="compose-add-photo-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+          Add Photos
+        </button>
+        <input type="file" id="compose-photo-input" accept="image/*" multiple class="hidden" />
+      </div>
+      <div class="compose-avatar-row">
+        <div class="compose-avatar" id="compose-avatar"></div>
+        <textarea class="compose-caption" id="compose-caption" placeholder="Write a caption…" rows="4"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/data/courses-data.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/components/sheets.js"></script>
+  <script src="js/components/nav.js"></script>
+  <script src="js/pages/feed.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
+</body>
+</html>

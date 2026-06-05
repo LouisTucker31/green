@@ -298,6 +298,7 @@
   display: flex;
   flex-direction: column;
   gap: 3px;
+  min-width: 0;
 }
 
 .round-card-score {
@@ -319,6 +320,8 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .round-card-edit {
@@ -352,82 +355,7 @@
   color: #ef4444;
 }
 
-/* BOTTOM SHEET */
-.sheet-overlay {
-  position: fixed;
-  inset: 0;
-  background: transparent;
-  z-index: 200;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.sheet-overlay.visible {
-  opacity: 1;
-}
-
-.sheet-overlay.hidden { display: none; }
-
-.bottom-sheet {
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%) translateY(100%);
-  width: 100%;
-  max-width: 430px;
-  background: var(--white);
-  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-  z-index: 201;
-  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
-  padding-bottom: env(safe-area-inset-bottom);
-  box-shadow: 0 -4px 24px rgba(0,0,0,0.12);
-}
-
-.bottom-sheet.visible {
-  transform: translateX(-50%) translateY(0);
-}
-
-.bottom-sheet.hidden { display: none; }
-
-.sheet-handle {
-  width: 36px;
-  height: 4px;
-  background: var(--grey-200);
-  border-radius: 99px;
-  margin: 12px auto 0;
-}
-
-.sheet-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px 12px;
-}
-
-.sheet-title {
-  font-family: var(--font-display);
-  font-size: 20px;
-  color: var(--grey-900);
-}
-
-.sheet-close {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--grey-100);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--grey-600);
-  cursor: pointer;
-}
-
-.sheet-body {
-  padding: 8px 20px 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
+/* sheet styles in layout.css */
 
 /* FORM */
 .form-field {

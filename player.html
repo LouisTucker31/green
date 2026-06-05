@@ -1,0 +1,88 @@
+<!-- Green PWA | Player Profile -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a3a28" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Green" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <title>Green – Player</title>
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/pages/profile.css" />
+</head>
+<body>
+
+  <div class="page" id="page-player">
+
+    <!-- HEADER -->
+    <header class="profile-header">
+      <a href="#" onclick="history.back(); return false;" class="back-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </a>
+      <h1 class="page-title" id="player-header-name">Player</h1>
+      <div style="width:40px;"></div>
+    </header>
+
+    <main class="profile-main">
+
+      <!-- IDENTITY -->
+      <section class="profile-identity">
+        <div class="player-avatar" id="player-avatar">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--green-700)" stroke-width="1.5">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <div class="profile-identity-info">
+          <h2 class="profile-name" id="player-name">—</h2>
+          <span class="profile-handle" id="player-handle"></span>
+          <span class="profile-handicap" id="player-handicap"></span>
+        </div>
+        <button class="profile-follow-btn" id="player-follow-btn">Follow</button>
+      </section>
+
+      <!-- STATS STRIP -->
+      <section class="profile-stats-strip">
+        <div class="profile-stat-item">
+          <span class="profile-stat-num" id="player-stat-courses">0</span>
+          <span class="profile-stat-lbl">Courses</span>
+        </div>
+        <div class="profile-stat-divider"></div>
+        <div class="profile-stat-item">
+          <span class="profile-stat-num" id="player-stat-posts">0</span>
+          <span class="profile-stat-lbl">Posts</span>
+        </div>
+        <div class="profile-stat-divider"></div>
+        <div class="profile-stat-item">
+          <span class="profile-stat-num" id="player-stat-counties">0</span>
+          <span class="profile-stat-lbl">Counties</span>
+        </div>
+      </section>
+
+      <!-- POSTS GRID -->
+      <div class="profile-posts-grid" id="player-posts-grid"></div>
+      <div class="profile-posts-empty hidden" id="player-posts-empty">
+        <p class="profile-empty-text">No posts yet</p>
+      </div>
+
+    </main>
+
+  </div>
+
+  <script src="js/data/courses-data.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/pages/player.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 // Green PWA | Service Worker — caching and offline support
 
-const CACHE_NAME = 'green-v1';
+const CACHE_NAME = 'green-v3';
 
 const STATIC_ASSETS = [
   '.',
@@ -11,6 +11,10 @@ const STATIC_ASSETS = [
   'profile.html',
   'achievements.html',
   'settings.html',
+  'feed.html',
+  'post.html',
+  'player.html',
+  'js/pages/player.js',
   'manifest.json',
   'ukLow.svg',
   'css/base.css',
@@ -24,21 +28,30 @@ const STATIC_ASSETS = [
   'css/components/progress.css',
   'css/pages/course.css',
   'css/pages/courses.css',
+  'css/pages/feed.css',
   'css/pages/home.css',
   'css/pages/passport.css',
+  'css/pages/post.css',
   'css/pages/profile.css',
+  'css/pages/achievements.css',
+  'css/pages/settings.css',
   'js/app.js',
   'js/db.js',
   'js/components/map.js',
   'js/components/modal.js',
   'js/components/nav.js',
+  'js/components/sheets.js',
   'js/components/toast.js',
   'js/data/courses-data.js',
   'js/pages/course.js',
   'js/pages/courses.js',
+  'js/pages/feed.js',
   'js/pages/home.js',
   'js/pages/passport.js',
+  'js/pages/post.js',
   'js/pages/profile.js',
+  'js/pages/achievements.js',
+  'js/pages/settings.js',
 ];
 
 // Install — cache everything

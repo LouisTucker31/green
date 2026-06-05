@@ -56,7 +56,6 @@ const CoursesPage = (() => {
     if (!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition(pos => {
       const { latitude, longitude } = pos.coords;
-      // Find nearest courses from allClubs using haversine approximation
       const withDist = allClubs
         .filter(c => c.lat && c.lng)
         .map(c => {
@@ -70,7 +69,12 @@ const CoursesPage = (() => {
       if (!withDist.length) return;
       nearbyList.innerHTML = withDist.map(c => courseItemHTML(c)).join('');
       if (currentFilter === 'all') nearbySection.classList.remove('hidden');
-    }, () => {});
+    }, () => {
+      // Permission denied or error — keep section hidden
+      nearbySection.classList.add('hidden');
+    }, {
+      timeout: 5000,
+    });
   }
 
   // ─── RENDER ───────────────────────────────────────────────────────────────

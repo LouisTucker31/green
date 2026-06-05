@@ -134,7 +134,7 @@ const PassportPage = (() => {
       const total = countyTotals[name] || 1;
       const pct   = Math.round((count / total) * 100);
       return `
-        <div class="county-item">
+        <div class="county-item" data-county="${name}" style="cursor:pointer;">
           <div class="county-badge">${count}</div>
           <div class="county-info">
             <div class="county-name-row">
@@ -145,8 +145,78 @@ const PassportPage = (() => {
               <div class="county-bar-fill" style="width:${pct}%"></div>
             </div>
           </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--grey-400);flex-shrink:0;">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
         </div>`;
     }).join('');
+
+    countyList.querySelectorAll('.county-item').forEach(item => {
+      item.addEventListener('click', () => openCountySheet(item.dataset.county));
+    });
+  }
+
+  // ─── COUNTY SHEET ─────────────────────────────────────────────────────────
+  function openCountySheet(countyName) {
+    const overlay  = document.getElementById('county-overlay');
+    const sheet    = document.getElementById('county-sheet');
+    const title    = document.getElementById('county-sheet-title');
+    const statsCtn = document.getElementById('county-sheet-stats');
+    const list     = document.getElementById('county-sheet-list');
+
+    const playedIds     = DB.Played.getAll();
+    const allInCounty   = COURSES_DATA.data.filter(c => c.county === countyName);
+    const playedInCounty = allInCounty.filter(c => playedIds.includes(c.id));
+    const pct = allInCounty.length ? Math.round((playedInCounty.length / allInCounty.length) * 100) : 0;
+
+    title.textContent = countyName;
+
+    statsCtn.innerHTML = `
+      <div class="county-sheet-stat">
+        <span class="county-sheet-stat-num">${playedInCounty.length}</span>
+        <span class="county-sheet-stat-label">Played</span>
+      </div>
+      <div class="county-sheet-stat">
+        <span class="county-sheet-stat-num">${allInCounty.length}</span>
+        <span class="county-sheet-stat-label">Total</span>
+      </div>
+      <div class="county-sheet-stat">
+        <span class="county-sheet-stat-num">${pct}%</span>
+        <span class="county-sheet-stat-label">Complete</span>
+      </div>
+    `;
+
+    const sorted = [...allInCounty].sort((a, b) => {
+      const ap = playedIds.includes(a.id) ? 0 : 1;
+      const bp = playedIds.includes(b.id) ? 0 : 1;
+      return ap - bp || a.name.localeCompare(b.name);
+    });
+
+    list.innerHTML = sorted.map(c => {
+      const played = playedIds.includes(c.id);
+      const tick   = played
+        ? `<svg class="county-course-tick" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+             <polyline points="20 6 9 17 4 12"/>
+           </svg>`
+        : '';
+      return `
+        <a href="course.html?id=${c.id}" class="county-course-item ${played ? 'played' : ''}">
+          <div class="county-course-info">
+            <span class="county-course-name">${c.name}</span>
+            ${c.courseType ? `<span class="county-course-type">${c.courseType}</span>` : ''}
+          </div>
+          ${tick}
+        </a>`;
+    }).join('');
+
+    const countySheetCtrl = new Sheet('county-sheet', 'county-overlay');
+    countySheetCtrl.open();
+
+    function closeSheet() {
+      countySheetCtrl.close();
+    }
+
+    document.getElementById('county-sheet-close').onclick = closeSheet;
   }
 
   if (document.readyState === 'loading') {

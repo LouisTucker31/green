@@ -293,7 +293,134 @@ const DB = (() => {
 
   };
 
-  // ─── DEBUG ───────────────────────────────────────────────
+  // ─── POSTS ───────────────────────────────────────────────────────────────
+  // A post is a deliberately shared round. Separate from the round itself.
+  //
+  // Post shape:
+  // {
+  //   id:        'post_1719836400000',
+  //   roundId:   'round_1719836400000',
+  //   courseId:  'course_123',
+  //   courseName:'Royal Birkdale',
+  //   date:      '2024-05-16',
+  //   caption:   'Great day out',
+  //   photos:    [],          // array of base64 strings
+  //   createdAt: 1719836400000
+  // }
+
+  const Posts = {
+
+    getAll() {
+      return read('green_posts') || [];
+    },
+
+    getAllSorted() {
+      return Posts.getAll().sort((a, b) => b.createdAt - a.createdAt);
+    },
+
+    getById(postId) {
+      return Posts.getAll().find(p => p.id === postId) || null;
+    },
+
+    getByRoundId(roundId) {
+      return Posts.getAll().find(p => p.roundId === roundId) || null;
+    },
+
+    add({ roundId, courseId, courseName, date, caption, photos }) {
+      const posts = Posts.getAll();
+      const post  = {
+        id:         `post_${Date.now()}`,
+        roundId,
+        courseId,
+        courseName,
+        date,
+        caption:    caption || '',
+        photos:     photos  || [],
+        createdAt:  Date.now(),
+      };
+      posts.push(post);
+      write('green_posts', posts);
+      return post;
+    },
+
+    update(postId, changes) {
+      const posts = Posts.getAll().map(p =>
+        p.id === postId ? { ...p, ...changes } : p
+      );
+      write('green_posts', posts);
+    },
+
+    remove(postId) {
+      write('green_posts', Posts.getAll().filter(p => p.id !== postId));
+    },
+
+  };
+
+  // ─── FOLLOWING ───────────────────────────────────────────────────────────
+  // Stored as array of handles the user follows e.g. ['@jameswilson', '@louis']
+
+  const Following = {
+
+    getAll() {
+      return read('green_following') || [];
+    },
+
+    has(handle) {
+      return Following.getAll().includes(handle);
+    },
+
+    add(handle) {
+      const list = Following.getAll();
+      if (!list.includes(handle)) {
+        list.push(handle);
+        write('green_following', list);
+      }
+    },
+
+    remove(handle) {
+      write('green_following', Following.getAll().filter(h => h !== handle));
+    },
+
+    toggle(handle) {
+      Following.has(handle) ? Following.remove(handle) : Following.add(handle);
+      return Following.has(handle);
+    },
+
+  };
+
+  // ─── LIKES ───────────────────────────────────────────────────────────────
+  // Stored as array of round IDs the user has liked
+
+  const Likes = {
+
+    getAll() {
+      return read('green_likes') || [];
+    },
+
+    has(roundId) {
+      return Likes.getAll().includes(roundId);
+    },
+
+    add(roundId) {
+      const list = Likes.getAll();
+      if (!list.includes(roundId)) {
+        list.push(roundId);
+        write('green_likes', list);
+      }
+    },
+
+    remove(roundId) {
+      write('green_likes', Likes.getAll().filter(id => id !== roundId));
+    },
+
+    toggle(roundId) {
+      Likes.has(roundId) ? Likes.remove(roundId) : Likes.add(roundId);
+      return Likes.has(roundId);
+    },
+
+  };
+
+  // ─── DEBUG ───────────────────────────────────────────────────────────────
   // Call DB.debug() in browser console to inspect all stored data
 
   function debug() {
@@ -314,6 +441,6 @@ const DB = (() => {
   }
 
   // ─── PUBLIC API ──────────────────────────────────────────
-  return { Rounds, Played, Wishlist, Favourites, Profile, Stats, Settings, debug };
+  return { Rounds, Played, Wishlist, Favourites, Profile, Stats, Settings, Likes, Posts, Following, debug };
 
 })();

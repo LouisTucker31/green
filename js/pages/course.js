@@ -155,40 +155,26 @@ const CoursePage = (() => {
   }
 
   // ─── SHEET ───────────────────────────────────────────────────────────────
+  const logSheetCtrl = new Sheet('log-sheet', 'sheet-overlay');
+
   function openSheet(round = null) {
     editingRoundId = round ? round.id : null;
-    document.getElementById('sheet-title').textContent = round ? 'Edit Round' : 'Log a Round';
+    const sheetTitle = document.getElementById('sheet-title');
+    sheetTitle.textContent = round ? 'Edit Round' : 'Log a Round';
     inputDate.value  = round ? round.date : new Date().toISOString().split('T')[0];
-    inputScore.value = round && round.score !== null ? round.score : '';
+    inputScore.value = (round && round.score !== null) ? round.score : '';
     inputNotes.value = round ? (round.notes || '') : '';
-
-    logSheet.classList.remove('hidden');
-    sheetOverlay.classList.remove('hidden');
-
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        logSheet.classList.add('visible');
-        sheetOverlay.classList.add('visible');
-      });
-    });
+    logSheetCtrl.open();
   }
 
   function closeSheet() {
-    logSheet.classList.remove('visible');
-    sheetOverlay.classList.remove('visible');
-    setTimeout(() => {
-      logSheet.classList.add('hidden');
-      sheetOverlay.classList.add('hidden');
-    }, 350);
+    logSheetCtrl.close();
   }
 
   // ─── EVENTS ──────────────────────────────────────────────────────────────
   function bindEvents() {
-    // Toggle: Played
-    btnPlayed.addEventListener('click', () => {
-      DB.Played.toggle(course.id);
-      renderToggles();
-    });
+    // Toggle: Played — opens log sheet so a date is always recorded
+    btnPlayed.addEventListener('click', () => openSheet());
 
     // Toggle: Wishlist
     btnWishlist.addEventListener('click', () => {
@@ -203,9 +189,9 @@ const CoursePage = (() => {
     });
 
     // Log round
-    logRoundBtn.addEventListener('click', openSheet);
+    logRoundBtn.addEventListener('click', () => openSheet());
     sheetClose.addEventListener('click', closeSheet);
-    sheetOverlay.addEventListener('click', closeSheet);
+    // overlay tap handled by Sheet class
 
     // Save round
     saveRoundBtn.addEventListener('click', () => {
@@ -234,6 +220,7 @@ const CoursePage = (() => {
       closeSheet();
       renderToggles();
       renderRounds();
+      if (typeof checkAchievements === 'function') checkAchievements();
     });
 
     // Edit/Delete round

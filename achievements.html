@@ -13,6 +13,7 @@
   <title>Green – Achievements</title>
   <link rel="stylesheet" href="css/base.css" />
   <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/pages/achievements.css" />
 </head>
 <body>
 
@@ -20,10 +21,12 @@
 
     <header class="page-header">
       <h1 class="page-title">Achievements</h1>
+      <div class="achievements-summary" id="achievements-summary"></div>
     </header>
 
-    <main style="flex:1; display:flex; align-items:center; justify-content:center; padding-bottom: var(--nav-height);">
-      <p style="color:var(--grey-400); font-size:14px;">Coming soon</p>
+    <main class="achievements-main">
+      <div id="recently-earned" class="recently-earned hidden"></div>
+      <div id="achievements-list"></div>
     </main>
 
     <nav class="bottom-nav">
@@ -40,9 +43,10 @@
         </svg>
         <span>Courses</span>
       </a>
-      <a href="#" class="nav-item nav-add">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      <a href="feed.html" class="nav-item nav-add">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+          <line x1="4" y1="22" x2="4" y2="15"/>
         </svg>
       </a>
       <a href="passport.html" class="nav-item">
@@ -54,7 +58,7 @@
       </a>
       <a href="profile.html" class="nav-item">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0-4 4v2"/>
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
           <circle cx="12" cy="7" r="4"/>
         </svg>
         <span>Profile</span>
@@ -66,6 +70,7 @@
   <script src="js/data/courses-data.js"></script>
   <script src="js/db.js"></script>
   <script src="js/components/nav.js"></script>
+  <script src="js/pages/achievements.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js');
