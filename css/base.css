@@ -40,7 +40,7 @@ a, button {
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
   --shadow-md: 0 4px 12px rgba(0,0,0,0.10);
 
-  --nav-height: 84px;
+  --nav-height: 68px;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -55,7 +55,69 @@ body {
   overflow-x: hidden;
 }
 
+@keyframes pageFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.page {
+  animation: pageFadeIn 0.2s ease forwards;
+}
+
 a { text-decoration: none; color: inherit; }
+
+/* ─── PRESS FEEL ─── */
+button:active,
+.btn-primary:active,
+.btn-secondary:active,
+.feed-card:active,
+.course-item:active,
+.round-card:active,
+.profile-post-thumb:active,
+.people-result-item:active,
+.achievements-link:active,
+.county-item:active,
+.timeline-card:active,
+.picker-item:active {
+  transform: scale(0.97);
+  transition: transform 0.1s ease;
+}
+
+button,
+.feed-card,
+.course-item,
+.round-card,
+.profile-post-thumb,
+.people-result-item,
+.achievements-link,
+.county-item,
+.timeline-card,
+.picker-item {
+  transition: transform 0.15s ease, background 0.15s;
+}
+
+.nav-item:active {
+  transform: scale(0.9);
+  transition: transform 0.1s ease;
+}
+
+.nav-item {
+  transition: transform 0.15s ease, color 0.2s;
+}
+
+.caption-tag {
+  color: var(--green-700);
+  font-weight: 600;
+}
+
+.caption-tag-link {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.caption-tag-link:active {
+  opacity: 0.7;
+}
 .hidden { display: none !important; }
 img { display: block; max-width: 100%; }
 button { font-family: var(--font-body); cursor: pointer; border: none; background: none; }

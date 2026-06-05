@@ -78,4 +78,12 @@ function renderMap() {
     init();
   }
 
+  window.addEventListener('pageshow', e => {
+    if (e.persisted) init();
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') init();
+  });
+
 })();

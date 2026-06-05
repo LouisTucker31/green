@@ -199,9 +199,9 @@ const ProfilePage = (() => {
     document.getElementById('profile-handicap-display').textContent =
       profile.handicap ? `Handicap ${profile.handicap}` : '';
 
-    document.getElementById('stat-courses').textContent  = playedIds.length;
-    document.getElementById('stat-posts').textContent    = posts.length;
-    document.getElementById('stat-counties').textContent = counties.size;
+    document.getElementById('stat-courses').textContent   = playedIds.length;
+    document.getElementById('stat-posts').textContent     = posts.length;
+    document.getElementById('stat-following').textContent = DB.Following.getAll().length;
 
     document.getElementById('detail-home-course').textContent = profile.homeCourse || '—';
     document.getElementById('detail-handicap').textContent    = profile.handicap   ?? '—';
@@ -236,6 +236,49 @@ const ProfilePage = (() => {
   }
 
   // ─── TABS ────────────────────────────────────────────────────────────────
+
+  function bindFollowing() {
+    const sheetCtrl = new Sheet('following-sheet', 'following-overlay');
+
+    document.getElementById('stat-following-item').addEventListener('click', () => {
+      renderFollowingList();
+      sheetCtrl.open();
+    });
+
+    document.getElementById('following-close').addEventListener('click', () => sheetCtrl.close());
+  }
+
+  function renderFollowingList() {
+    const handles = DB.Following.getAll();
+    const list    = document.getElementById('following-list');
+
+    if (!handles.length) {
+      list.innerHTML = `<p class="following-empty">You're not following anyone yet.<br>Find people on the Discover tab.</p>`;
+      return;
+    }
+
+    list.innerHTML = handles.map(handle => `
+      <div class="following-item">
+        <div class="following-item-avatar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green-700)" stroke-width="1.5">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <div class="following-item-info">
+          <span class="following-item-handle">${escapeHTML(handle)}</span>
+        </div>
+        <button class="unfollow-btn" data-handle="${escapeHTML(handle)}">Unfollow</button>
+      </div>`).join('');
+
+    list.querySelectorAll('.unfollow-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        DB.Following.remove(btn.dataset.handle);
+        document.getElementById('stat-following').textContent = DB.Following.getAll().length;
+        renderFollowingList();
+      });
+    });
+  }
 
   function bindTabs() {
     document.querySelectorAll('.profile-tab').forEach(tab => {
@@ -322,6 +365,14 @@ const ProfilePage = (() => {
     });
   }
 
+  function escapeHTML(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
   function sanitiseHandle(raw) { return raw.toLowerCase().replace(/[^a-z0-9_]/g, '').slice(0, 30); }
   function validateHandle(handle) {
     if (!handle) return 'Handle is required';
@@ -337,6 +388,7 @@ const ProfilePage = (() => {
     bindAvatar();
     bindTabs();
     bindCourseSearch();
+    bindFollowing();
     document.getElementById('edit-profile-btn').addEventListener('click', openModal);
     document.getElementById('edit-cancel-btn').addEventListener('click', closeModal);
     document.getElementById('edit-save-btn').addEventListener('click', saveModal);
@@ -352,5 +404,9 @@ const ProfilePage = (() => {
   } else {
     init();
   }
+
+  window.addEventListener('pageshow', e => {
+    if (e.persisted) render();
+  });
 
 })();

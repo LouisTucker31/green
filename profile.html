@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta name="theme-color" content="#1a3a28" />
+  <meta name="theme-color" content="#f7f4ef" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Green" />
@@ -73,9 +73,9 @@
           <span class="profile-stat-lbl">Posts</span>
         </div>
         <div class="profile-stat-divider"></div>
-        <div class="profile-stat-item">
-          <span class="profile-stat-num" id="stat-counties">0</span>
-          <span class="profile-stat-lbl">Counties</span>
+        <div class="profile-stat-item" id="stat-following-item" style="cursor:pointer;">
+          <span class="profile-stat-num" id="stat-following">0</span>
+          <span class="profile-stat-lbl">Following</span>
         </div>
       </section>
 
@@ -148,6 +148,21 @@
         </div>
       </div>
     </div>
+
+    <!-- FOLLOWING SHEET -->
+  <div class="sheet-overlay hidden" id="following-overlay"></div>
+  <div class="bottom-sheet hidden" id="following-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <h2 class="sheet-title">Following</h2>
+      <button class="sheet-close" id="following-close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="following-list" id="following-list"></div>
+  </div>
 
     <!-- AVATAR ACTION SHEET -->
     <div class="sheet-overlay hidden" id="avatar-overlay"></div>

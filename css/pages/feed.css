@@ -3,7 +3,7 @@
 .feed-main {
   flex: 1;
   overflow-y: auto;
-  padding: 0 16px calc(var(--nav-height) + 16px);
+  padding: 0 16px calc(var(--nav-height) + 48px);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -117,16 +117,13 @@
 
 /* ─── COMPOSE SCREEN ─── */
 .compose-screen {
-  position: fixed;
+  position: absolute;
   inset: 0;
   background: var(--cream);
   z-index: 300;
   display: flex;
   flex-direction: column;
-  max-width: 430px;
-  left: 50%;
-  transform: translateX(-50%);
-  transition: opacity 0.25s;
+  min-height: 100dvh;
 }
 
 .compose-screen.hidden {

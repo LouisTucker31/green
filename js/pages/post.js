@@ -142,7 +142,7 @@ const PostPage = (() => {
   function renderCaption() {
     if (!post.caption) return;
     const el = document.getElementById('post-caption');
-    el.textContent = post.caption;
+    el.innerHTML = parseCaption(post.caption, true);
     el.classList.remove('hidden');
   }
 
@@ -231,14 +231,49 @@ const PostPage = (() => {
 
     overlay.classList.remove('hidden');
 
-    // Scroll to start index
     requestAnimationFrame(() => {
       const slide = track.querySelectorAll('.gallery-slide')[startIndex];
       if (slide) slide.scrollIntoView({ behavior: 'instant', inline: 'start', block: 'nearest' });
     });
 
-    // Update dots on scroll
     track.addEventListener('scroll', onGalleryScroll);
+    bindGalleryDragClose(overlay);
+  }
+
+  function bindGalleryDragClose(overlay) {
+    let startY    = 0;
+    let currentY  = 0;
+    let dragging  = false;
+
+    overlay.addEventListener('touchstart', e => {
+      // Only start drag if single finger (not swiping between photos)
+      if (e.touches.length !== 1) return;
+      startY   = e.touches[0].clientY;
+      currentY = startY;
+      dragging = true;
+    }, { passive: true });
+
+    overlay.addEventListener('touchmove', e => {
+      if (!dragging || e.touches.length !== 1) return;
+      currentY      = e.touches[0].clientY;
+      const deltaY  = currentY - startY;
+      if (deltaY < 0) return; // only allow downward drag
+      const opacity = Math.max(0.3, 1 - deltaY / 300);
+      overlay.style.background   = `rgba(0,0,0,${opacity})`;
+      overlay.style.transform    = `translateY(${deltaY * 0.4}px)`;
+    }, { passive: true });
+
+    overlay.addEventListener('touchend', () => {
+      if (!dragging) return;
+      dragging = false;
+      const deltaY = currentY - startY;
+      if (deltaY > 100) {
+        closeGallery();
+      } else {
+        overlay.style.transform = '';
+        overlay.style.background = '#000';
+      }
+    });
   }
 
   function onGalleryScroll() {
@@ -251,6 +286,8 @@ const PostPage = (() => {
   function closeGallery() {
     const overlay = document.getElementById('gallery-overlay');
     const track   = document.getElementById('gallery-track');
+    overlay.style.transform  = '';
+    overlay.style.background = '#000';
     overlay.classList.add('hidden');
     track.removeEventListener('scroll', onGalleryScroll);
   }
@@ -495,6 +532,26 @@ const PostPage = (() => {
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
+  }
+
+  function parseCaption(str, clickable = false) {
+    if (!str) return '';
+    const myHandle = DB.Profile.get().handle || '';
+    return escapeHTML(str).replace(
+      /(#[a-zA-Z0-9_]+)|(@[a-zA-Z0-9_.]+)/g,
+      (match, hash, mention) => {
+        if (!clickable) return `<span class="caption-tag">${match}</span>`;
+        if (hash) {
+          const tag = hash.slice(1);
+          return `<a class="caption-tag caption-tag-link" href="feed.html?tag=${encodeURIComponent(tag)}">${match}</a>`;
+        }
+        if (mention) {
+          const url = mention === myHandle ? 'profile.html' : `player.html?handle=${encodeURIComponent(mention)}`;
+          return `<a class="caption-tag caption-tag-link" href="${url}">${match}</a>`;
+        }
+        return match;
+      }
+    );
   }
 
   if (document.readyState === 'loading') {

@@ -52,7 +52,7 @@ const PlayerPage = (() => {
 
     document.getElementById('player-stat-courses').textContent  = playedIds.length;
     document.getElementById('player-stat-posts').textContent    = posts.length;
-    document.getElementById('player-stat-counties').textContent = counties.size;
+    document.getElementById('player-stat-following').textContent = DB.Following.getAll().length;
 
     // Posts grid
     renderGrid(posts);

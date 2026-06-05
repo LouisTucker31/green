@@ -231,6 +231,11 @@
   color: var(--green-600);
 }
 
+.course-status.favourited {
+  background: #fef9c3;
+  color: #ca8a04;
+}
+
 .course-status.unplayed {
   background: var(--grey-100);
   color: var(--grey-400);

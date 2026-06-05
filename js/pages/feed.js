@@ -13,7 +13,20 @@ const FeedPage = (() => {
     bindNewPost();
     bindEmptyLinks();
     bindDiscover();
-    renderFollowing();
+
+    // Handle incoming hashtag from post page caption tap
+    const params = new URLSearchParams(window.location.search);
+    const tag    = params.get('tag');
+    if (tag) {
+      switchTab('discover');
+      const input    = document.getElementById('discover-search-input');
+      const clearBtn = document.getElementById('discover-search-clear');
+      input.value    = '#' + tag;
+      clearBtn.classList.remove('hidden');
+      renderPeopleSearch('#' + tag);
+    } else {
+      renderFollowing();
+    }
   }
 
   // ─── TABS ────────────────────────────────────────────────────────────────
@@ -113,7 +126,27 @@ const FeedPage = (() => {
     const discList = document.getElementById('discover-list');
     const empty    = document.getElementById('discover-empty');
 
-    // Search local profiles — for now just your own profile
+    // Hashtag search — show matching posts
+    if (q.startsWith('#')) {
+      const tag      = q.slice(1);
+      const allPosts = DB.Posts.getAllSorted();
+      const matches  = allPosts.filter(p =>
+        p.caption && p.caption.toLowerCase().includes('#' + tag)
+      );
+      people.classList.add('hidden');
+      if (!matches.length) {
+        discList.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+      }
+      empty.classList.add('hidden');
+      discList.classList.remove('hidden');
+      discList.innerHTML = matches.map(p => cardHTML(p, profile)).join('');
+      bindCardEvents('discover-list');
+      return;
+    }
+
+    // People search — for now just your own profile
     // When backend exists this hits an API
     const results = [];
     if (
@@ -185,11 +218,9 @@ const FeedPage = (() => {
     const avatar   = avatarHTML(profile);
     const name     = profile.name   || 'You';
     const handle   = profile.handle || '';
-    const badge    = course && course.courseType
-      ? `<span class="feed-badge">${course.courseType}</span>`
-      : '';
+    const badge = '';
     const caption  = post.caption
-      ? `<p class="feed-notes">${truncateWords(post.caption, 60)}</p>`
+      ? `<p class="feed-notes">${parseCaption(truncateWords(post.caption, 60))}</p>`
       : '';
     const photo    = post.photos && post.photos.length
       ? `<div class="feed-card-photo"><img src="${post.photos[0]}" alt="Post photo" /></div>`
@@ -451,11 +482,10 @@ const FeedPage = (() => {
   // ─── HELPERS ─────────────────────────────────────────────────────────────
 
   function truncateWords(str, maxChars) {
-    if (!str || str.length <= maxChars) return escapeHTML(str || '');
+    if (!str || str.length <= maxChars) return str || '';
     const trimmed   = str.slice(0, maxChars);
     const lastSpace = trimmed.lastIndexOf(' ');
-    const cut = lastSpace > 0 ? trimmed.slice(0, lastSpace) : trimmed;
-    return escapeHTML(cut) + '…';
+    return (lastSpace > 0 ? trimmed.slice(0, lastSpace) : trimmed) + '…';
   }
 
   function likeCount(postId) {
@@ -495,10 +525,26 @@ const FeedPage = (() => {
       .replace(/"/g, '&quot;');
   }
 
+  function parseCaption(str) {
+    if (!str) return '';
+    return escapeHTML(str).replace(
+      /(#[a-zA-Z0-9_]+)|(@[a-zA-Z0-9_.]+)/g,
+      '<span class="caption-tag">$&</span>'
+    );
+  }
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
     init();
   }
+
+  window.addEventListener('pageshow', e => {
+    if (e.persisted) renderFollowing();
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') renderFollowing();
+  });
 
 })();

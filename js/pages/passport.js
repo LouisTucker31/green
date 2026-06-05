@@ -225,4 +225,8 @@ const PassportPage = (() => {
     init();
   }
 
+  window.addEventListener('pageshow', e => {
+    if (e.persisted) init();
+  });
+
 })();

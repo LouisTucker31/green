@@ -178,12 +178,18 @@ const CoursesPage = (() => {
 
   // ─── COURSE ITEM HTML ────────────────────────────────────────────────────
   function courseItemHTML(club) {
-    const played     = DB.Played.has(club.id);
-    const wishlisted = DB.Wishlist.has(club.id);
+    const played      = DB.Played.has(club.id);
+    const favourited  = DB.Favourites.has(club.id);
+    const wishlisted  = DB.Wishlist.has(club.id);
 
+    // Priority: Played > Favourite > Wishlist > Unplayed
     const statusIcon = played
       ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
            <polyline points="20 6 9 17 4 12"/>
+         </svg>`
+      : favourited
+      ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+           <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
          </svg>`
       : wishlisted
       ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -193,7 +199,7 @@ const CoursesPage = (() => {
            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
          </svg>`;
 
-    const statusClass = played ? 'played' : wishlisted ? 'wishlisted' : 'unplayed';
+    const statusClass = played ? 'played' : favourited ? 'favourited' : wishlisted ? 'wishlisted' : 'unplayed';
     const typeLabel   = club.courseType
       ? `<span class="course-type">${club.courseType}</span>`
       : '';
@@ -284,5 +290,14 @@ const CoursesPage = (() => {
   } else {
     init();
   }
+
+  // Re-render when returning via back button (bfcache restore)
+  window.addEventListener('pageshow', e => {
+    if (e.persisted) render();
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') render();
+  });
 
 })();

@@ -77,19 +77,19 @@ const AchievementsPage = (() => {
     },
     {
       id: 'sub_100', section: 'Scores',
-      title: 'Below 100', desc: 'Shoot under 100',
+      title: 'Sub 100', desc: 'Shoot under 100',
       icon: '🎯', check: (s) => s.bestScore !== null && s.bestScore < 100,
       progress: (s) => ({ val: s.bestScore !== null && s.bestScore < 100 ? 1 : 0, max: 1 }),
     },
     {
       id: 'sub_90', section: 'Scores',
-      title: 'Below 90', desc: 'Shoot under 90',
+      title: 'Sub 90', desc: 'Shoot under 90',
       icon: '🔥', check: (s) => s.bestScore !== null && s.bestScore < 90,
       progress: (s) => ({ val: s.bestScore !== null && s.bestScore < 90 ? 1 : 0, max: 1 }),
     },
     {
       id: 'sub_80', section: 'Scores',
-      title: 'Below 80', desc: 'Shoot under 80',
+      title: 'Sub 80', desc: 'Shoot under 80',
       icon: '⚡', check: (s) => s.bestScore !== null && s.bestScore < 80,
       progress: (s) => ({ val: s.bestScore !== null && s.bestScore < 80 ? 1 : 0, max: 1 }),
     },
@@ -316,5 +316,13 @@ const AchievementsPage = (() => {
   } else {
     render();
   }
+
+  window.addEventListener('pageshow', e => {
+    if (e.persisted) render();
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') render();
+  });
 
 })();

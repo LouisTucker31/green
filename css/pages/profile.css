@@ -18,7 +18,7 @@
 .profile-main {
   flex: 1;
   overflow-y: auto;
-  padding: 0 20px calc(var(--nav-height) + 16px);
+  padding: 0 20px calc(var(--nav-height) + 48px);
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -503,7 +503,7 @@
   padding: 12px 16px 40px;
   z-index: 200;
   box-shadow: 0 -4px 24px rgba(0,0,0,0.12);
-  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
 }
 
 .avatar-action-sheet.visible {
@@ -761,6 +761,73 @@
 }
 
 .profile-info-panel.hidden { display: none; }
+
+/* ─── FOLLOWING LIST ─── */
+.following-list {
+  overflow-y: auto;
+  padding: 0 0 16px;
+}
+
+.following-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--grey-100);
+}
+
+.following-item:last-child {
+  border-bottom: none;
+}
+
+.following-item-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--green-100);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.following-item-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.following-item-handle {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--grey-900);
+}
+
+.following-empty {
+  padding: 40px 20px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--grey-400);
+}
+
+.unfollow-btn {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  border-radius: 99px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid var(--grey-200);
+  color: var(--grey-900);
+  background: var(--white);
+  transition: all 0.15s;
+}
+
+.unfollow-btn:active {
+  background: var(--grey-100);
+}
 
 /* ─── FOLLOW BUTTON (for player page) ─── */
 .profile-follow-btn {

@@ -22,8 +22,8 @@ class Sheet {
     const { sheet, overlay } = this;
     sheet.classList.remove('hidden');
     overlay.classList.remove('hidden');
-    // Lock scroll
-    document.querySelector('.page')?.style.setProperty('overflow', 'hidden');
+    document.body.style.overflow   = 'hidden';
+    document.body.style.touchAction = 'none';
     requestAnimationFrame(() => requestAnimationFrame(() => {
       sheet.classList.add('visible');
       overlay.classList.add('visible');
@@ -34,14 +34,13 @@ class Sheet {
     const { sheet, overlay } = this;
     sheet.classList.remove('visible');
     overlay.classList.remove('visible');
-    // Reset any drag transform
-    sheet.style.transform = '';
+    sheet.style.transform  = '';
     sheet.style.transition = '';
     setTimeout(() => {
       sheet.classList.add('hidden');
       overlay.classList.add('hidden');
-      // Unlock scroll
-      document.querySelector('.page')?.style.removeProperty('overflow');
+      document.body.style.overflow    = '';
+      document.body.style.touchAction = '';
       if (this.onClose) this.onClose();
     }, 350);
   }
@@ -51,40 +50,49 @@ class Sheet {
   }
 
   _bindDrag() {
-    const handle = this.sheet.querySelector('.sheet-handle');
-    const target = handle || this.sheet;
+    // Drag from handle OR top 60px of sheet for easier mobile grab
+    const sheet  = this.sheet;
+    const handle = sheet.querySelector('.sheet-handle');
 
-    target.addEventListener('touchstart', e => {
+    const onTouchStart = e => {
+      // Only respond to touches in the top portion of the sheet
+      const rect   = sheet.getBoundingClientRect();
+      const touchY = e.touches[0].clientY;
+      if (touchY > rect.top + 80 && !handle?.contains(e.target)) return;
+
       this._dragStartY    = e.touches[0].clientY;
       this._dragCurrentY  = e.touches[0].clientY;
       this._dragStartTime = Date.now();
       this._dragging      = true;
-      // Disable transition during drag
-      this.sheet.style.transition = 'none';
-    }, { passive: true });
+      sheet.style.transition = 'none';
+    };
 
-    target.addEventListener('touchmove', e => {
+    const onTouchMove = e => {
       if (!this._dragging) return;
       this._dragCurrentY = e.touches[0].clientY;
       const delta = Math.max(0, this._dragCurrentY - this._dragStartY);
-      this.sheet.style.transform = `translateX(-50%) translateY(${delta}px)`;
-    }, { passive: true });
+      e.preventDefault(); // prevent page scroll during drag
+      sheet.style.transform = `translateX(-50%) translateY(${delta}px)`;
+    };
 
-    target.addEventListener('touchend', () => {
+    const onTouchEnd = () => {
       if (!this._dragging) return;
       this._dragging = false;
 
       const delta    = this._dragCurrentY - this._dragStartY;
       const elapsed  = Date.now() - this._dragStartTime;
-      const velocity = delta / elapsed; // px/ms
+      const velocity = delta / elapsed;
 
-      if (delta > 80 || velocity > 0.4) {
+      if (delta > 80 || velocity > 0.3) {
         this.close();
       } else {
-        // Snap back
-        this.sheet.style.transition = '';
-        this.sheet.style.transform  = '';
+        sheet.style.transition = '';
+        sheet.style.transform  = '';
       }
-    });
+    };
+
+    sheet.addEventListener('touchstart', onTouchStart, { passive: true });
+    sheet.addEventListener('touchmove',  onTouchMove,  { passive: false });
+    sheet.addEventListener('touchend',   onTouchEnd);
   }
-}
+} 
