@@ -59,7 +59,6 @@ const FeedPage = (() => {
   function renderFollowing() {
     const allPosts  = DB.Posts.getAllSorted();
     const profile   = DB.Profile.get();
-    const following = DB.Following.getAll();
     const list      = document.getElementById('feed-list');
     const empty     = document.getElementById('feed-empty');
 
@@ -217,12 +216,10 @@ const FeedPage = (() => {
   // ─── CARD HTML ───────────────────────────────────────────────────────────
 
   function cardHTML(post, profile) {
-    const course   = COURSES_DATA.data.find(c => c.id === post.courseId);
     const date     = formatDate(post.date);
     const avatar   = avatarHTML(profile);
     const name     = profile.name   || 'You';
     const handle   = profile.handle || '';
-    const badge = '';
     const caption  = post.caption
       ? `<p class="feed-notes">${parseCaption(truncateWords(post.caption, 60))}</p>`
       : '';
@@ -249,7 +246,6 @@ const FeedPage = (() => {
             <div class="feed-card-body-text">
               <div class="feed-course-row">
                 <span class="feed-course-name">${escapeHTML(post.courseName)}</span>
-                ${badge}
               </div>
               ${caption}
             </div>
@@ -418,6 +414,10 @@ const FeedPage = (() => {
       const reader = new FileReader();
       reader.onload = ev => {
         const img = new Image();
+        img.onerror = () => {
+          loaded++;
+          if (loaded === toAdd.length) renderPhotoGrid();
+        };
         img.onload = () => {
           const canvas = document.createElement('canvas');
           const max    = 1200;
@@ -443,6 +443,10 @@ const FeedPage = (() => {
           if (loaded === toAdd.length) renderPhotoGrid();
         };
         img.src = ev.target.result;
+      };
+      reader.onerror = () => {
+        loaded++;
+        if (loaded === toAdd.length) renderPhotoGrid();
       };
       reader.readAsDataURL(file);
     });

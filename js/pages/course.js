@@ -14,7 +14,6 @@ const CoursePage = (() => {
   const courseBadges = document.getElementById('course-badges');
   const infoCard     = document.getElementById('course-info-card');
   const roundsList   = document.getElementById('rounds-list');
-  const roundsEmpty  = document.getElementById('rounds-empty');
   const roundCount   = document.getElementById('round-count');
 
   const btnPlayed    = document.getElementById('btn-played');
@@ -122,7 +121,7 @@ const CoursePage = (() => {
       const d     = new Date(r.date + 'T12:00:00');
       const day   = d.getDate();
       const month = d.toLocaleString('en-GB', { month: 'short' });
-      const notes = r.notes ? `<p class="round-card-notes">${r.notes}</p>` : '';
+      const notes = r.notes ? `<p class="round-card-notes">${escapeHTML(r.notes)}</p>` : '';
       const score = r.score !== null
         ? `<span class="round-card-score">${r.score}</span>`
         : `<span class="round-card-no-score">No score</span>`;
@@ -195,12 +194,18 @@ const CoursePage = (() => {
 
     // Save round
     saveRoundBtn.addEventListener('click', () => {
-      const date  = inputDate.value;
-      const score = inputScore.value ? parseInt(inputScore.value, 10) : null;
-      const notes = inputNotes.value.trim();
+      const date      = inputDate.value;
+      const rawScore  = inputScore.value.trim();
+      const score     = rawScore ? parseInt(rawScore, 10) : null;
+      const notes     = inputNotes.value.trim().slice(0, 500);
 
       if (!date) {
         inputDate.focus();
+        return;
+      }
+
+      if (score !== null && (isNaN(score) || score < 18 || score > 300)) {
+        inputScore.focus();
         return;
       }
 
@@ -245,6 +250,14 @@ const CoursePage = (() => {
   }
 
   // ─── START ────────────────────────────────────────────────────────────────
+  function escapeHTML(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {

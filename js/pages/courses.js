@@ -40,7 +40,6 @@ const CoursesPage = (() => {
     showLoading(true);
     try {
       allClubs = COURSES_DATA.data.sort((a, b) => a.name.localeCompare(b.name));
-      console.log(`Loaded ${allClubs.length} clubs from static data`);
       showLoading(false);
       render();
       updateLoadMore();
@@ -268,7 +267,6 @@ const CoursesPage = (() => {
 
     filterTabs.forEach(tab => {
       tab.addEventListener('click', () => {
-        console.log('tab clicked:', tab.dataset.filter, 'current:', currentFilter);
         if (tab.dataset.filter === currentFilter) return;
         filterTabs.forEach(t => t.classList.remove('active'));
         tab.classList.add('active');

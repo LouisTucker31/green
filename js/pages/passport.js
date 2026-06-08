@@ -53,14 +53,14 @@ const PassportPage = (() => {
             const d     = new Date(r.date + 'T12:00:00');
             const date  = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
             const score = r.score !== null
-              ? `<div class="timeline-score"><span class="score-num">${r.score}</span></div>`
+              ? `<div class="timeline-score"><span class="score-num">${escapeHTML(String(r.score))}</span></div>`
               : '';
             return `
               <div class="timeline-item">
                 <div class="timeline-dot"></div>
                 <a href="course.html?id=${r.courseId}" class="timeline-card">
                   <div class="timeline-info">
-                    <span class="timeline-course">${r.courseName}</span>
+                    <span class="timeline-course">${escapeHTML(r.courseName)}</span>
                     <span class="timeline-date">${date}</span>
                   </div>
                   ${score}
@@ -140,7 +140,7 @@ const PassportPage = (() => {
           <div class="county-badge">${count}</div>
           <div class="county-info">
             <div class="county-name-row">
-              <span class="county-name">${name}</span>
+              <span class="county-name">${escapeHTML(name)}</span>
               <span class="county-pct">${pct}%</span>
             </div>
             <div class="county-bar-track">
@@ -231,6 +231,14 @@ const PassportPage = (() => {
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') init();
   });
+
+  function escapeHTML(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
 
   return { renderAll };
 

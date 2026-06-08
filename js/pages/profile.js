@@ -72,9 +72,11 @@ const ProfilePage = (() => {
     const reader = new FileReader();
     reader.onload = e => {
       const img = new Image();
+      img.onerror = () => console.error('Failed to load image for crop');
       img.onload = () => openCrop(img, onComplete);
       img.src = e.target.result;
     };
+    reader.onerror = () => console.error('Failed to read file');
     reader.readAsDataURL(file);
   }
 
@@ -201,7 +203,6 @@ const ProfilePage = (() => {
     const scores        = rounds.map(r => r.score).filter(s => s !== null);
     const best          = scores.length ? Math.min(...scores) : null;
     const playedCourses = COURSES_DATA.data.filter(c => playedIds.includes(c.id));
-    const counties      = new Set(playedCourses.map(c => c.county).filter(Boolean));
 
     renderAvatar(profile);
 
@@ -355,11 +356,17 @@ const ProfilePage = (() => {
     errEl.textContent = '';
 
     const homeCourse = selectedHomeCourse || document.getElementById('input-home-course').value.trim();
+    const rawName     = document.getElementById('input-name').value.trim().slice(0, 50);
+    const rawHandicap = parseFloat(document.getElementById('input-handicap').value);
+    const handicap    = !isNaN(rawHandicap) && rawHandicap >= 0 && rawHandicap <= 54
+      ? rawHandicap
+      : null;
+
     DB.Profile.save({
-      name:       document.getElementById('input-name').value.trim(),
+      name:       rawName,
       handle:     '@' + handle,
       homeCourse,
-      handicap:   document.getElementById('input-handicap').value.trim(),
+      handicap,
     });
     closeModal();
     render();

@@ -199,7 +199,8 @@ const AchievementsPage = (() => {
     const stats = computeStats();
 
     // ─── RECENTLY EARNED STRIP ───────────────────────────────────────────
-    const everEarned = JSON.parse(localStorage.getItem('green_achievements_notified') || '[]');
+    let everEarned = [];
+    try { everEarned = JSON.parse(localStorage.getItem('green_achievements_notified') || '[]'); } catch { everEarned = []; }
     const earned = ACHIEVEMENTS.filter(a => !a.comingSoon && (a.check(stats) || everEarned.includes(a.id)));
     const recentEl = document.getElementById('recently-earned');
 

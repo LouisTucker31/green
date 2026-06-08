@@ -127,7 +127,7 @@
     <div class="sheet-handle"></div>
     <div class="sheet-header">
       <h2 class="sheet-title" id="sheet-title">Log a Round</h2>
-      <button class="sheet-close" id="sheet-close">
+      <button class="sheet-close" id="sheet-close" aria-label="Close">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
@@ -144,7 +144,7 @@
       </div>
       <div class="form-field">
         <label class="form-label">Notes <span class="form-optional">(optional)</span></label>
-        <textarea class="form-input form-textarea" id="input-notes" placeholder="How did it go?"></textarea>
+        <textarea class="form-input form-textarea" id="input-notes" placeholder="How did it go?" maxlength="500"></textarea>
       </div>
       <button class="btn-primary" id="save-round-btn">Save Round</button>
     </div>

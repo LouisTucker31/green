@@ -403,6 +403,10 @@ const PostPage = (() => {
         const reader = new FileReader();
         reader.onload = ev => {
           const img = new Image();
+          img.onerror = () => {
+            loaded++;
+            if (loaded === files.slice(0, remaining).length) renderEditGrid();
+          };
           img.onload = () => {
             const canvas = document.createElement('canvas');
             const max = 1200;
@@ -418,6 +422,10 @@ const PostPage = (() => {
             if (loaded === files.slice(0, remaining).length) renderEditGrid();
           };
           img.src = ev.target.result;
+        };
+        reader.onerror = () => {
+          loaded++;
+          if (loaded === files.slice(0, remaining).length) renderEditGrid();
         };
         reader.readAsDataURL(file);
       });

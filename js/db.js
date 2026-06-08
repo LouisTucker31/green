@@ -4,11 +4,18 @@ const DB = (() => {
 
   // ─── KEYS ───────────────────────────────────────────────
   const KEYS = {
-    ROUNDS:    'green_rounds',
-    WISHLIST:  'green_wishlist',
-    FAVOURITES:'green_favourites',
-    PROFILE:   'green_profile',
-    SETTINGS:  'green_settings',
+    ROUNDS:       'green_rounds',
+    WISHLIST:     'green_wishlist',
+    FAVOURITES:   'green_favourites',
+    PROFILE:      'green_profile',
+    SETTINGS:     'green_settings',
+    PLAYED:       'green_played',
+    POSTS:        'green_posts',
+    FOLLOWING:    'green_following',
+    LIKES:        'green_likes',
+    COMMENTS:     'green_comments',
+    ACHIEVEMENTS: 'green_achievements_notified',
+    LOCATION:     'green_location_pref',
   };
 
   // ─── HELPERS ────────────────────────────────────────────
@@ -112,13 +119,13 @@ const DB = (() => {
 
 // ─── PLAYED ──────────────────────────────────────────────────────────────
   const Played = {
-    getAll() { return read('green_played') || []; },
+    getAll() { return read(KEYS.PLAYED) || []; },
     has(courseId) { return Played.getAll().includes(courseId); },
     add(courseId) {
       const list = Played.getAll();
-      if (!list.includes(courseId)) { list.push(courseId); write('green_played', list); }
+      if (!list.includes(courseId)) { list.push(courseId); write(KEYS.PLAYED, list); }
     },
-    remove(courseId) { write('green_played', Played.getAll().filter(id => id !== courseId)); },
+    remove(courseId) { write(KEYS.PLAYED, Played.getAll().filter(id => id !== courseId)); },
     toggle(courseId) {
       Played.has(courseId) ? Played.remove(courseId) : Played.add(courseId);
       return Played.has(courseId);
@@ -312,7 +319,7 @@ const DB = (() => {
   const Posts = {
 
     getAll() {
-      return read('green_posts') || [];
+      return read(KEYS.POSTS) || [];
     },
 
     getAllSorted() {
@@ -340,7 +347,7 @@ const DB = (() => {
         createdAt:  Date.now(),
       };
       posts.push(post);
-      write('green_posts', posts);
+      write(KEYS.POSTS, posts);
       return post;
     },
 
@@ -348,11 +355,11 @@ const DB = (() => {
       const posts = Posts.getAll().map(p =>
         p.id === postId ? { ...p, ...changes } : p
       );
-      write('green_posts', posts);
+      write(KEYS.POSTS, posts);
     },
 
     remove(postId) {
-      write('green_posts', Posts.getAll().filter(p => p.id !== postId));
+      write(KEYS.POSTS, Posts.getAll().filter(p => p.id !== postId));
     },
 
   };
@@ -363,7 +370,7 @@ const DB = (() => {
   const Following = {
 
     getAll() {
-      return read('green_following') || [];
+      return read(KEYS.FOLLOWING) || [];
     },
 
     has(handle) {
@@ -374,12 +381,12 @@ const DB = (() => {
       const list = Following.getAll();
       if (!list.includes(handle)) {
         list.push(handle);
-        write('green_following', list);
+        write(KEYS.FOLLOWING, list);
       }
     },
 
     remove(handle) {
-      write('green_following', Following.getAll().filter(h => h !== handle));
+      write(KEYS.FOLLOWING, Following.getAll().filter(h => h !== handle));
     },
 
     toggle(handle) {
@@ -395,7 +402,7 @@ const DB = (() => {
   const Likes = {
 
     getAll() {
-      return read('green_likes') || [];
+      return read(KEYS.LIKES) || [];
     },
 
     has(roundId) {
@@ -406,12 +413,12 @@ const DB = (() => {
       const list = Likes.getAll();
       if (!list.includes(roundId)) {
         list.push(roundId);
-        write('green_likes', list);
+        write(KEYS.LIKES, list);
       }
     },
 
     remove(roundId) {
-      write('green_likes', Likes.getAll().filter(id => id !== roundId));
+      write(KEYS.LIKES, Likes.getAll().filter(id => id !== roundId));
     },
 
     toggle(roundId) {
@@ -422,18 +429,11 @@ const DB = (() => {
   };
 
   // ─── COMMENTS ────────────────────────────────────────────────────────────
-  // Comment shape:
-  // {
-  //   id:        'comment_1719836400000',
-  //   postId:    'post_1719836400000',
-  //   text:      'Great round!',
-  //   createdAt: 1719836400000
-  // }
 
   const Comments = {
 
     getAll() {
-      return read('green_comments') || [];
+      return read(KEYS.COMMENTS) || [];
     },
 
     getForPost(postId) {
@@ -449,12 +449,12 @@ const DB = (() => {
         createdAt: Date.now(),
       };
       all.push(comment);
-      write('green_comments', all);
+      write(KEYS.COMMENTS, all);
       return comment;
     },
 
     remove(commentId) {
-      write('green_comments', Comments.getAll().filter(c => c.id !== commentId));
+      write(KEYS.COMMENTS, Comments.getAll().filter(c => c.id !== commentId));
     },
 
     countForPost(postId) {

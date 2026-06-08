@@ -1,6 +1,6 @@
 // Green PWA | Service Worker — caching and offline support
 
-const CACHE_NAME = 'green-v6';
+const CACHE_NAME = 'green-v8';
 
 const STATIC_ASSETS = [
   '.',
@@ -15,18 +15,10 @@ const STATIC_ASSETS = [
   'feed.html',
   'post.html',
   'player.html',
-  'js/pages/player.js',
   'manifest.json',
   'ukLow.svg',
   'css/base.css',
   'css/layout.css',
-  'css/components/badges.css',
-  'css/components/buttons.css',
-  'css/components/cards.css',
-  'css/components/forms.css',
-  'css/components/map.css',
-  'css/components/modals.css',
-  'css/components/progress.css',
   'css/pages/course.css',
   'css/pages/courses.css',
   'css/pages/feed.css',
@@ -36,11 +28,8 @@ const STATIC_ASSETS = [
   'css/pages/profile.css',
   'css/pages/achievements.css',
   'css/pages/settings.css',
-  'js/app.js',
   'js/db.js',
-  'js/utils.js',
   'js/components/map.js',
-  'js/components/modal.js',
   'js/components/nav.js',
   'js/components/sheets.js',
   'js/components/toast.js',

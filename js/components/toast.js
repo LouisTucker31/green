@@ -194,7 +194,8 @@ function checkAchievements() {
   };
 
   // Load already-notified achievements
-  const notified = JSON.parse(localStorage.getItem('green_achievements_notified') || '[]');
+  let notified = [];
+  try { notified = JSON.parse(localStorage.getItem('green_achievements_notified') || '[]'); } catch { notified = []; }
   const newlyUnlocked = [];
 
   ACHIEVEMENT_DEFS.forEach(a => {

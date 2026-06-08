@@ -64,7 +64,7 @@
             <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
           <input type="text" class="discover-search-input" id="discover-search-input" placeholder="Search by name or handle…" />
-          <button class="discover-search-clear hidden" id="discover-search-clear">
+          <button class="discover-search-clear hidden" id="discover-search-clear" aria-label="Clear search">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
@@ -135,7 +135,7 @@
     <div class="sheet-handle"></div>
     <div class="sheet-header">
       <h2 class="sheet-title">Select a Round</h2>
-      <button class="sheet-close" id="picker-close">
+      <button class="sheet-close" id="picker-close" aria-label="Close">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
@@ -167,7 +167,7 @@
       </div>
       <div class="compose-avatar-row">
         <div class="compose-avatar" id="compose-avatar"></div>
-        <textarea class="compose-caption" id="compose-caption" placeholder="Write a caption…" rows="4"></textarea>
+        <textarea class="compose-caption" id="compose-caption" placeholder="Write a caption…" rows="4" maxlength="500"></textarea>
       </div>
     </div>
   </div>
