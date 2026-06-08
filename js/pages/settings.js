@@ -28,6 +28,7 @@ const SettingsPage = (() => {
       { id: 'privacy-private',    key: 'privacy_private' },
       { id: 'privacy-handicap',   key: 'privacy_show_handicap' },
       { id: 'privacy-scores',     key: 'privacy_show_scores' },
+      { id: 'privacy-passport',   key: 'privacy_passport' },
       { id: 'social-follow',      key: 'social_allow_follow' },
       { id: 'social-leaderboards',key: 'social_leaderboards' },
       { id: 'social-nearby',      key: 'social_nearby' },

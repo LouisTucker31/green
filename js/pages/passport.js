@@ -2,38 +2,42 @@
 
 const PassportPage = (() => {
 
-  function init() {
-    bindTabs();
-    renderTimeline();
-    renderMap();
-    renderStats();
+  // ─── PUBLIC RENDER (called by profile page too) ───────────────────────
+  // ctx = { prefix: '' } for passport page, { prefix: 'pp-' } for profile
+
+  function renderAll(ctx = {}) {
+    const p = ctx.prefix || '';
+    bindTabs(p);
+    renderTimeline(p);
+    renderMap(p);
+    renderStats(p);
   }
 
-  // ─── TABS ─────────────────────────────────────────────────────────────────
-  function bindTabs() {
-    const tabs   = document.querySelectorAll('.passport-tab');
-    const panels = document.querySelectorAll('.passport-main');
+  // ─── TABS ─────────────────────────────────────────────────────────────
+  function bindTabs(p) {
+    const tabs   = document.querySelectorAll(`.${p}passport-tab`);
+    const panels = document.querySelectorAll(`.${p}passport-main`);
     tabs.forEach(tab => {
       tab.addEventListener('click', () => {
         tabs.forEach(t => t.classList.remove('active'));
-        panels.forEach(p => p.classList.add('hidden'));
+        panels.forEach(pn => pn.classList.add('hidden'));
         tab.classList.add('active');
-        document.getElementById('tab-' + tab.dataset.tab).classList.remove('hidden');
+        document.getElementById(`${p}tab-` + tab.dataset.tab).classList.remove('hidden');
       });
     });
   }
 
-  // ─── TIMELINE ────────────────────────────────────────────────────────────
-  function renderTimeline() {
+  // ─── TIMELINE ─────────────────────────────────────────────────────────
+  function renderTimeline(p = '') {
     const rounds  = DB.Rounds.getAll().sort((a, b) => new Date(b.date) - new Date(a.date));
-    const content = document.getElementById('timeline-content');
+    const content = document.getElementById(`${p}timeline-content`);
+    if (!content) return;
 
     if (!rounds.length) {
       content.innerHTML = '<p style="color:var(--grey-400);font-size:14px;padding:16px 0;">No rounds logged yet. Head to a course to log your first round.</p>';
       return;
     }
 
-    // Group by year
     const byYear = {};
     rounds.forEach(r => {
       const year = new Date(r.date + 'T12:00:00').getFullYear();
@@ -68,27 +72,27 @@ const PassportPage = (() => {
     `).join('');
   }
 
-  // ─── MAP ─────────────────────────────────────────────────────────────────
-  function renderMap() {
+  // ─── MAP ──────────────────────────────────────────────────────────────
+  function renderMap(p = '') {
     const playedIds = DB.Played.getAll();
-    const dots      = document.getElementById('passport-course-dots');
+    const dots      = document.getElementById(`${p}passport-course-dots`);
     if (!dots) return;
     dots.innerHTML  = '';
 
-    renderMapDots('passport-course-dots', playedIds);
+    renderMapDots(`${p}passport-course-dots`, playedIds);
 
-    // Map stats
     const playedCourses = COURSES_DATA.data.filter(c => playedIds.includes(c.id));
     const counties = new Set(playedCourses.map(c => c.county).filter(Boolean));
     const pct = playedIds.length === 0 ? '0' : ((playedIds.length / COURSES_DATA.data.length) * 100).toFixed(1);
 
-    document.getElementById('map-stat-played').textContent  = playedIds.length;
-    document.getElementById('map-stat-counties').textContent = counties.size;
-    document.getElementById('map-stat-pct').textContent     = `${pct}%`;
+    const el = id => document.getElementById(`${p}${id}`);
+    if (el('map-stat-played'))   el('map-stat-played').textContent   = playedIds.length;
+    if (el('map-stat-counties')) el('map-stat-counties').textContent = counties.size;
+    if (el('map-stat-pct'))      el('map-stat-pct').textContent      = `${pct}%`;
   }
 
-  // ─── STATS ───────────────────────────────────────────────────────────────
-  function renderStats() {
+  // ─── STATS ────────────────────────────────────────────────────────────
+  function renderStats(p = '') {
     const playedIds = DB.Played.getAll();
     const rounds    = DB.Rounds.getAll();
     const thisYear  = new Date().getFullYear();
@@ -100,31 +104,29 @@ const PassportPage = (() => {
     const best          = scores.length ? Math.min(...scores) : null;
     const avg           = scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : null;
 
-    document.getElementById('stat-courses').textContent     = playedIds.length;
-    document.getElementById('stat-rounds-year').textContent = roundsYear.length;
-    document.getElementById('stat-counties').textContent    = counties.size;
-    document.getElementById('stat-best').textContent        = best ?? '—';
-    document.getElementById('stat-avg').textContent         = avg ?? '—';
+    const el = id => document.getElementById(`${p}${id}`);
+    if (el('stat-courses'))     el('stat-courses').textContent     = playedIds.length;
+    if (el('stat-rounds-year')) el('stat-rounds-year').textContent = roundsYear.length;
+    if (el('stat-counties'))    el('stat-counties').textContent    = counties.size;
+    if (el('stat-best'))        el('stat-best').textContent        = best ?? '—';
+    if (el('stat-avg'))         el('stat-avg').textContent         = avg ?? '—';
 
-    // Top counties
     const countyMap = {};
     playedCourses.forEach(c => {
       if (!c.county) return;
       countyMap[c.county] = (countyMap[c.county] || 0) + 1;
     });
 
-    // Total courses per county from full dataset
     const countyTotals = {};
     COURSES_DATA.data.forEach(c => {
       if (!c.county) return;
       countyTotals[c.county] = (countyTotals[c.county] || 0) + 1;
     });
 
-    const sorted = Object.entries(countyMap)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5);
+    const sorted = Object.entries(countyMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
+    const countyList = document.getElementById(`${p}county-list`);
+    if (!countyList) return;
 
-    const countyList = document.getElementById('county-list');
     if (!sorted.length) {
       countyList.innerHTML = '<p style="color:var(--grey-400);font-size:14px;padding:16px 0;">No counties yet</p>';
       return;
@@ -134,7 +136,7 @@ const PassportPage = (() => {
       const total = countyTotals[name] || 1;
       const pct   = Math.round((count / total) * 100);
       return `
-        <div class="county-item" data-county="${name}" style="cursor:pointer;">
+        <div class="county-item" data-county="${name}" data-prefix="${p}" style="cursor:pointer;">
           <div class="county-badge">${count}</div>
           <div class="county-info">
             <div class="county-name-row">
@@ -152,20 +154,18 @@ const PassportPage = (() => {
     }).join('');
 
     countyList.querySelectorAll('.county-item').forEach(item => {
-      item.addEventListener('click', () => openCountySheet(item.dataset.county));
+      item.addEventListener('click', () => openCountySheet(item.dataset.county, item.dataset.prefix || ''));
     });
   }
 
-  // ─── COUNTY SHEET ─────────────────────────────────────────────────────────
-  function openCountySheet(countyName) {
-    const overlay  = document.getElementById('county-overlay');
-    const sheet    = document.getElementById('county-sheet');
-    const title    = document.getElementById('county-sheet-title');
-    const statsCtn = document.getElementById('county-sheet-stats');
-    const list     = document.getElementById('county-sheet-list');
+  // ─── COUNTY SHEET ─────────────────────────────────────────────────────
+  function openCountySheet(countyName, p = '') {
+    const title    = document.getElementById(`${p}county-sheet-title`);
+    const statsCtn = document.getElementById(`${p}county-sheet-stats`);
+    const list     = document.getElementById(`${p}county-sheet-list`);
 
-    const playedIds     = DB.Played.getAll();
-    const allInCounty   = COURSES_DATA.data.filter(c => c.county === countyName);
+    const playedIds      = DB.Played.getAll();
+    const allInCounty    = COURSES_DATA.data.filter(c => c.county === countyName);
     const playedInCounty = allInCounty.filter(c => playedIds.includes(c.id));
     const pct = allInCounty.length ? Math.round((playedInCounty.length / allInCounty.length) * 100) : 0;
 
@@ -183,16 +183,15 @@ const PassportPage = (() => {
       <div class="county-sheet-stat">
         <span class="county-sheet-stat-num">${pct}%</span>
         <span class="county-sheet-stat-label">Complete</span>
-      </div>
-    `;
+      </div>`;
 
-    const sorted = [...allInCounty].sort((a, b) => {
+    const sortedCourses = [...allInCounty].sort((a, b) => {
       const ap = playedIds.includes(a.id) ? 0 : 1;
       const bp = playedIds.includes(b.id) ? 0 : 1;
       return ap - bp || a.name.localeCompare(b.name);
     });
 
-    list.innerHTML = sorted.map(c => {
+    list.innerHTML = sortedCourses.map(c => {
       const played = playedIds.includes(c.id);
       const tick   = played
         ? `<svg class="county-course-tick" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -209,14 +208,14 @@ const PassportPage = (() => {
         </a>`;
     }).join('');
 
-    const countySheetCtrl = new Sheet('county-sheet', 'county-overlay');
+    const countySheetCtrl = new Sheet(`${p}county-sheet`, `${p}county-overlay`);
     countySheetCtrl.open();
+    document.getElementById(`${p}county-sheet-close`).onclick = () => countySheetCtrl.close();
+  }
 
-    function closeSheet() {
-      countySheetCtrl.close();
-    }
-
-    document.getElementById('county-sheet-close').onclick = closeSheet;
+  // ─── INIT ─────────────────────────────────────────────────────────────
+  function init() {
+    renderAll({ prefix: '' });
   }
 
   if (document.readyState === 'loading') {
@@ -228,5 +227,11 @@ const PassportPage = (() => {
   window.addEventListener('pageshow', e => {
     if (e.persisted) init();
   });
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') init();
+  });
+
+  return { renderAll };
 
 })();

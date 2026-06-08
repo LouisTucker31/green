@@ -23,7 +23,10 @@ const PlayerPage = (() => {
 
     // Render with whatever we know about this handle
     // (locally we only have our own data; backend will provide others)
-    renderPlayer(handle, myProfile);
+    // Check privacy — for now all profiles share your own settings locally
+    // When backend arrives, fetch target user's privacy settings instead
+    const settings = DB.Settings.get();
+    renderPlayer(handle, myProfile, settings);
     bindFollow(handle);
   }
 

@@ -64,6 +64,11 @@ body {
   animation: pageFadeIn 0.2s ease forwards;
 }
 
+.page .bottom-nav {
+  animation: none;
+  opacity: 1;
+}
+
 a { text-decoration: none; color: inherit; }
 
 /* ─── PRESS FEEL ─── */

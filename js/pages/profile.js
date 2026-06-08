@@ -280,18 +280,28 @@ const ProfilePage = (() => {
     });
   }
 
+  let _passportRendered = false;
+
   function bindTabs() {
     document.querySelectorAll('.profile-tab').forEach(tab => {
       tab.addEventListener('click', () => {
         document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
         const which = tab.dataset.tab;
+
         document.getElementById('profile-posts-grid').classList.toggle('hidden', which !== 'posts');
         document.getElementById('profile-posts-empty').classList.toggle('hidden', true);
         document.getElementById('profile-info-panel').classList.toggle('hidden', which !== 'info');
+        document.getElementById('profile-passport-panel').classList.toggle('hidden', which !== 'passport');
+
         if (which === 'posts') {
           const posts = DB.Posts.getAll();
           if (!posts.length) document.getElementById('profile-posts-empty').classList.remove('hidden');
+        }
+
+        if (which === 'passport' && !_passportRendered) {
+          _passportRendered = true;
+          PassportPage.renderAll({ prefix: 'pp-' });
         }
       });
     });

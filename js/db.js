@@ -280,6 +280,7 @@ const DB = (() => {
         privacy_private: false,
         privacy_show_handicap: true,
         privacy_show_scores: true,
+        privacy_passport: true,
         social_allow_follow: true,
         social_leaderboards: true,
         social_nearby: true,
