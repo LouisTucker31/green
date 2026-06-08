@@ -2,8 +2,6 @@
 
 const PostPage = (() => {
 
-  const COMMENTS_KEY = 'green_comments';
-
   let postId  = null;
   let post    = null;
   let round   = null;
@@ -437,6 +435,15 @@ const PostPage = (() => {
   // ─── EVENTS ──────────────────────────────────────────────────────────────
 
   function bindEvents() {
+    const shareBtn = document.getElementById('post-share-btn');
+    if (shareBtn) {
+      if (navigator.share) {
+        shareBtn.addEventListener('click', () => sharePost(post));
+      } else {
+        shareBtn.style.display = 'none';
+      }
+    }
+
     document.getElementById('post-like-btn').addEventListener('click', () => {
       DB.Likes.toggle(postId);
       renderLike();
@@ -466,12 +473,7 @@ const PostPage = (() => {
     const text  = input.value.trim();
     if (!text) return;
 
-    saveComment({
-      id:        `comment_${Date.now()}`,
-      postId,
-      text,
-      createdAt: Date.now(),
-    });
+    saveComment({ text });
 
     input.value = '';
     input.blur();
@@ -479,27 +481,16 @@ const PostPage = (() => {
   }
 
   function getComments() {
-    try {
-      const all = JSON.parse(localStorage.getItem(COMMENTS_KEY) || '[]');
-      return all.filter(c => c.postId === postId);
-    } catch { return []; }
+    return DB.Comments.getForPost(postId);
   }
 
-  function saveComment(comment) {
-    try {
-      const all = JSON.parse(localStorage.getItem(COMMENTS_KEY) || '[]');
-      all.push(comment);
-      localStorage.setItem(COMMENTS_KEY, JSON.stringify(all));
-    } catch {}
+  function saveComment({ text }) {
+    DB.Comments.add({ postId, text });
   }
 
   function deleteComment(commentId) {
-    try {
-      const all     = JSON.parse(localStorage.getItem(COMMENTS_KEY) || '[]');
-      const updated = all.filter(c => c.id !== commentId);
-      localStorage.setItem(COMMENTS_KEY, JSON.stringify(updated));
-      renderComments();
-    } catch {}
+    DB.Comments.remove(commentId);
+    renderComments();
   }
 
   // ─── HELPERS ─────────────────────────────────────────────────────────────
@@ -524,34 +515,6 @@ const PostPage = (() => {
     const d = new Date(ts);
     return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) +
       ' · ' + d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-  }
-
-  function escapeHTML(str) {
-    return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
-
-  function parseCaption(str, clickable = false) {
-    if (!str) return '';
-    const myHandle = DB.Profile.get().handle || '';
-    return escapeHTML(str).replace(
-      /(#[a-zA-Z0-9_]+)|(@[a-zA-Z0-9_.]+)/g,
-      (match, hash, mention) => {
-        if (!clickable) return `<span class="caption-tag">${match}</span>`;
-        if (hash) {
-          const tag = hash.slice(1);
-          return `<a class="caption-tag caption-tag-link" href="feed.html?tag=${encodeURIComponent(tag)}">${match}</a>`;
-        }
-        if (mention) {
-          const url = mention === myHandle ? 'profile.html' : `player.html?handle=${encodeURIComponent(mention)}`;
-          return `<a class="caption-tag caption-tag-link" href="${url}">${match}</a>`;
-        }
-        return match;
-      }
-    );
   }
 
   if (document.readyState === 'loading') {

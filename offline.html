@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Green — Offline</title>
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <style>
+    .offline-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100dvh;
+      padding: 40px 24px;
+      text-align: center;
+      gap: 16px;
+    }
+    .offline-icon {
+      width: 72px;
+      height: 72px;
+      background: var(--green-50);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+    .offline-title {
+      font-family: var(--font-display);
+      font-size: 28px;
+      color: var(--green-800);
+    }
+    .offline-message {
+      font-size: 15px;
+      color: var(--grey-400);
+      max-width: 280px;
+      line-height: 1.6;
+    }
+    .offline-btn {
+      margin-top: 8px;
+      padding: 12px 28px;
+      background: var(--green-700);
+      color: white;
+      border-radius: var(--radius-xl);
+      font-size: 15px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="offline-wrap">
+    <div class="offline-icon">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--green-700)" stroke-width="1.5">
+        <line x1="1" y1="1" x2="23" y2="23"/>
+        <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/>
+        <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/>
+        <path d="M10.71 5.05A16 16 0 0 1 22.56 9"/>
+        <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/>
+        <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+        <line x1="12" y1="20" x2="12.01" y2="20"/>
+      </svg>
+    </div>
+    <h1 class="offline-title">You're offline</h1>
+    <p class="offline-message">No connection right now. Your rounds and courses are still available — just head back to the app.</p>
+    <button class="offline-btn" onclick="window.location.href='index.html'">Back to Green</button>
+  </div>
+</body>
+</html>

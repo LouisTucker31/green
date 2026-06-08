@@ -375,14 +375,6 @@ const ProfilePage = (() => {
     });
   }
 
-  function escapeHTML(str) {
-    return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
-
   function sanitiseHandle(raw) { return raw.toLowerCase().replace(/[^a-z0-9_]/g, '').slice(0, 30); }
   function validateHandle(handle) {
     if (!handle) return 'Handle is required';

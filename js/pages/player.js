@@ -11,8 +11,6 @@ const PlayerPage = (() => {
       return;
     }
 
-    // For now, the only "player" in local storage is yourself
-    // When backend arrives this fetches from API
     const myProfile = DB.Profile.get();
     const isMe      = myProfile.handle === handle;
 
@@ -21,50 +19,32 @@ const PlayerPage = (() => {
       return;
     }
 
-    // Render with whatever we know about this handle
-    // (locally we only have our own data; backend will provide others)
-    // Check privacy — for now all profiles share your own settings locally
-    // When backend arrives, fetch target user's privacy settings instead
-    const settings = DB.Settings.get();
-    renderPlayer(handle, myProfile, settings);
+    renderUnavailable(handle);
     bindFollow(handle);
   }
 
-  function renderPlayer(handle, profile) {
+  function renderUnavailable(handle) {
     document.title = `Green – ${handle}`;
 
-    // Avatar
-    const avatarEl = document.getElementById('player-avatar');
-    if (profile.avatar) {
-      avatarEl.innerHTML = `<img src="${profile.avatar}" alt="Avatar"
-        style="width:88px;height:88px;border-radius:50%;object-fit:cover;border:3px solid white;box-shadow:var(--shadow-md);" />`;
-    }
-
-    const name = profile.name || handle;
-    document.getElementById('player-name').textContent        = name;
-    document.getElementById('player-header-name').textContent = name;
+    document.getElementById('player-header-name').textContent = handle;
+    document.getElementById('player-name').textContent        = handle;
     document.getElementById('player-handle').textContent      = handle;
-    document.getElementById('player-handicap').textContent    =
-      profile.handicap ? `Handicap ${profile.handicap}` : '';
+    document.getElementById('player-handicap').textContent    = '';
 
-    // Stats — use local data as placeholder
-    const playedIds     = DB.Played.getAll();
-    const posts         = DB.Posts.getAll();
-    const playedCourses = COURSES_DATA.data.filter(c => playedIds.includes(c.id));
-    const counties      = new Set(playedCourses.map(c => c.county).filter(Boolean));
+    document.getElementById('player-stat-courses').textContent  = '—';
+    document.getElementById('player-stat-posts').textContent    = '—';
+    document.getElementById('player-stat-following').textContent = '—';
 
-    document.getElementById('player-stat-courses').textContent  = playedIds.length;
-    document.getElementById('player-stat-posts').textContent    = posts.length;
-    document.getElementById('player-stat-following').textContent = DB.Following.getAll().length;
+    const grid  = document.getElementById('player-posts-grid');
+    const empty = document.getElementById('player-posts-empty');
+    grid.innerHTML = '';
+    empty.classList.remove('hidden');
+    empty.querySelector('.profile-empty-text').textContent = 'Profile not available yet. Full profiles coming soon.';
 
-    // Posts grid
-    renderGrid(posts);
-
-    // Follow button state
+    const followBtn = document.getElementById('player-follow-btn');
     const following = DB.Following.has(handle);
-    const btn = document.getElementById('player-follow-btn');
-    btn.textContent = following ? 'Following' : 'Follow';
-    btn.classList.toggle('following', following);
+    followBtn.textContent = following ? 'Following' : 'Follow';
+    followBtn.classList.toggle('following', following);
   }
 
   function renderGrid(posts) {

@@ -54,6 +54,8 @@ const CoursesPage = (() => {
   // ─── NEARBY ──────────────────────────────────────────────────────────────
   function tryNearby() {
     if (!navigator.geolocation) return;
+    const locPref = localStorage.getItem('green_location_pref');
+    if (locPref === 'denied') return;
     navigator.geolocation.getCurrentPosition(pos => {
       const { latitude, longitude } = pos.coords;
       const withDist = allClubs
@@ -66,11 +68,12 @@ const CoursesPage = (() => {
         .sort((a, b) => a.dist - b.dist)
         .slice(0, 5);
 
+      localStorage.setItem('green_location_pref', 'granted');
       if (!withDist.length) return;
       nearbyList.innerHTML = withDist.map(c => courseItemHTML(c)).join('');
       if (currentFilter === 'all') nearbySection.classList.remove('hidden');
     }, () => {
-      // Permission denied or error — keep section hidden
+      localStorage.setItem('green_location_pref', 'denied');
       nearbySection.classList.add('hidden');
     }, {
       timeout: 5000,

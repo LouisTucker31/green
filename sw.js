@@ -1,10 +1,11 @@
 // Green PWA | Service Worker — caching and offline support
 
-const CACHE_NAME = 'green-v5';
+const CACHE_NAME = 'green-v6';
 
 const STATIC_ASSETS = [
   '.',
   'index.html',
+  'offline.html',
   'courses.html',
   'course.html',
   'passport.html',
@@ -37,6 +38,7 @@ const STATIC_ASSETS = [
   'css/pages/settings.css',
   'js/app.js',
   'js/db.js',
+  'js/utils.js',
   'js/components/map.js',
   'js/components/modal.js',
   'js/components/nav.js',
@@ -75,10 +77,15 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Fetch — cache first, fall back to network
+// Fetch — cache first, fall back to network, offline.html for failed navigations
 self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request)
       .then(cached => cached || fetch(event.request))
+      .catch(() => {
+        if (event.request.mode === 'navigate') {
+          return caches.match('offline.html');
+        }
+      })
   );
 });

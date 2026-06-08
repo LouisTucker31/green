@@ -421,6 +421,48 @@ const DB = (() => {
 
   };
 
+  // ─── COMMENTS ────────────────────────────────────────────────────────────
+  // Comment shape:
+  // {
+  //   id:        'comment_1719836400000',
+  //   postId:    'post_1719836400000',
+  //   text:      'Great round!',
+  //   createdAt: 1719836400000
+  // }
+
+  const Comments = {
+
+    getAll() {
+      return read('green_comments') || [];
+    },
+
+    getForPost(postId) {
+      return Comments.getAll().filter(c => c.postId === postId);
+    },
+
+    add({ postId, text }) {
+      const all     = Comments.getAll();
+      const comment = {
+        id:        `comment_${Date.now()}`,
+        postId,
+        text,
+        createdAt: Date.now(),
+      };
+      all.push(comment);
+      write('green_comments', all);
+      return comment;
+    },
+
+    remove(commentId) {
+      write('green_comments', Comments.getAll().filter(c => c.id !== commentId));
+    },
+
+    countForPost(postId) {
+      return Comments.getForPost(postId).length;
+    },
+
+  };
+
   // ─── DEBUG ───────────────────────────────────────────────────────────────
   // Call DB.debug() in browser console to inspect all stored data
 
@@ -431,6 +473,7 @@ const DB = (() => {
     console.log('Favourites:', Favourites.getAll());
     console.log('Profile:',    Profile.get());
     console.log('Settings:',   Settings.get());
+    console.log('Comments:',   Comments.getAll());
     console.log('Stats:',      {
       totalCoursesPlayed: Stats.totalCoursesPlayed(),
       totalRounds:        Stats.totalRounds(),
@@ -442,6 +485,6 @@ const DB = (() => {
   }
 
   // ─── PUBLIC API ──────────────────────────────────────────
-  return { Rounds, Played, Wishlist, Favourites, Profile, Stats, Settings, Likes, Posts, Following, debug };
+  return { Rounds, Played, Wishlist, Favourites, Profile, Stats, Settings, Likes, Posts, Following, Comments, debug };
 
 })();

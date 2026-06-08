@@ -2,7 +2,8 @@
 
 const FeedPage = (() => {
 
-  const MAX_PHOTOS   = 10;
+  const MAX_PHOTOS      = 10;
+  const MAX_PHOTO_BYTES = 3 * 1024 * 1024; // 3MB total across all posts
   let selectedRound  = null;
   let pendingPhotos  = [];
   let activeTab      = 'following';
@@ -304,14 +305,16 @@ const FeedPage = (() => {
     const rounds = DB.Rounds.getAllSorted();
     const list   = document.getElementById('picker-list');
 
-    if (!rounds.length) {
-      list.innerHTML = `<p class="picker-empty">No rounds logged yet.<br>Log a round on a course page first.</p>`;
+    const unpostedRounds = rounds.filter(r => !DB.Posts.getByRoundId(r.id));
+
+    if (!unpostedRounds.length) {
+      list.innerHTML = `<p class="picker-empty">No rounds to post.<br>All your rounds have been posted, or log a new round on a course page first.</p>`;
     } else {
-      list.innerHTML = rounds.map(r => pickerItemHTML(r)).join('');
+      list.innerHTML = unpostedRounds.map(r => pickerItemHTML(r)).join('');
       list.querySelectorAll('.picker-item').forEach(item => {
         item.addEventListener('click', () => {
           const roundId = item.dataset.roundId;
-          const round   = rounds.find(r => r.id === roundId);
+          const round   = unpostedRounds.find(r => r.id === roundId);
           closePicker();
           setTimeout(() => openCompose(round), 370);
         });
@@ -326,15 +329,13 @@ const FeedPage = (() => {
   }
 
   function pickerItemHTML(round) {
-    const alreadyPosted = !!DB.Posts.getByRoundId(round.id);
-    const date          = formatDate(round.date);
+    const date = formatDate(round.date);
     return `
       <div class="picker-item" data-round-id="${round.id}">
         <div>
           <div class="picker-item-course">${escapeHTML(round.courseName)}</div>
           <div class="picker-item-date">${date}</div>
         </div>
-        ${alreadyPosted ? '<span class="picker-item-already">Posted</span>' : ''}
       </div>`;
   }
 
@@ -368,9 +369,26 @@ const FeedPage = (() => {
     pendingPhotos = [];
   }
 
+  function getTotalPostStorageBytes() {
+    try {
+      const posts = DB.Posts.getAll();
+      const raw   = JSON.stringify(posts);
+      return Math.round((raw.length * 3) / 4);
+    } catch { return 0; }
+  }
+
   function submitPost() {
     if (!selectedRound) return;
     const caption = document.getElementById('compose-caption').value.trim();
+
+    const pendingBytes  = pendingPhotos.reduce((acc, p) => acc + Math.round((p.length * 3) / 4), 0);
+    const existingBytes = getTotalPostStorageBytes();
+    const STORAGE_WARN  = 4 * 1024 * 1024; // warn at 4MB total post storage
+
+    if (existingBytes + pendingBytes > STORAGE_WARN) {
+      const proceed = confirm('Your post storage is getting large (over 4MB). This may cause issues on some devices. Post anyway?');
+      if (!proceed) return;
+    }
 
     DB.Posts.add({
       roundId:    selectedRound.id,
@@ -408,7 +426,16 @@ const FeedPage = (() => {
           canvas.width  = w;
           canvas.height = h;
           canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-          pendingPhotos.push(canvas.toDataURL('image/jpeg', 0.82));
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+          const sizeBytes = Math.round((dataUrl.length * 3) / 4);
+          const existingBytes = pendingPhotos.reduce((acc, p) => acc + Math.round((p.length * 3) / 4), 0);
+          if (existingBytes + sizeBytes > MAX_PHOTO_BYTES) {
+            alert('This photo would exceed the 3MB limit for this post. Try fewer or smaller images.');
+            loaded++;
+            if (loaded === toAdd.length) renderPhotoGrid();
+            return;
+          }
+          pendingPhotos.push(dataUrl);
           loaded++;
           if (loaded === toAdd.length) renderPhotoGrid();
         };
@@ -445,6 +472,17 @@ const FeedPage = (() => {
   function bindCardEvents(listId = 'feed-list') {
     const container = document.getElementById(listId);
     if (!container) return;
+
+    container.querySelectorAll('.feed-share-btn').forEach(btn => {
+      if (!navigator.share) { btn.style.display = 'none'; return; }
+      btn.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        const postId = btn.closest('.feed-card').dataset.postId;
+        const post   = DB.Posts.getById(postId);
+        if (post) sharePost(post);
+      });
+    });
 
     container.querySelectorAll('.feed-like-btn').forEach(btn => {
       btn.addEventListener('click', e => {
@@ -493,10 +531,7 @@ const FeedPage = (() => {
   }
 
   function getCommentCount(postId) {
-    try {
-      const all = JSON.parse(localStorage.getItem('green_comments') || '[]');
-      return all.filter(c => c.postId === postId).length;
-    } catch { return 0; }
+    return DB.Comments.countForPost(postId);
   }
 
   function avatarHTML(profile) {
@@ -515,22 +550,6 @@ const FeedPage = (() => {
   function formatDate(dateStr) {
     const d = new Date(dateStr + 'T12:00:00');
     return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-  }
-
-  function escapeHTML(str) {
-    return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
-
-  function parseCaption(str) {
-    if (!str) return '';
-    return escapeHTML(str).replace(
-      /(#[a-zA-Z0-9_]+)|(@[a-zA-Z0-9_.]+)/g,
-      '<span class="caption-tag">$&</span>'
-    );
   }
 
   if (document.readyState === 'loading') {

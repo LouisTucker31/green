@@ -51,6 +51,7 @@ function renderMap() {
         <div class="round-item">
           <span class="round-course" style="color:var(--grey-400);font-size:14px;padding:8px 0;">No rounds logged yet</span>
         </div>`;
+      renderEmptyState();
       return;
     }
 
@@ -70,6 +71,39 @@ function renderMap() {
           ${score}
         </a>`;
     }).join('');
+  }
+
+  function renderEmptyState() {
+    const playedIds = DB.Played.getAll();
+    if (playedIds.length) return;
+
+    const existing = document.getElementById('home-empty-state');
+    if (existing) return;
+
+    const empty = document.createElement('div');
+    empty.id    = 'home-empty-state';
+    empty.style.cssText = `
+      margin: 0 20px 24px;
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 28px 24px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    `;
+    empty.innerHTML = `
+      <div style="width:56px;height:56px;background:var(--green-50);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--green-700)" stroke-width="1.5">
+          <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+          <line x1="4" y1="22" x2="4" y2="15"/>
+        </svg>
+      </div>
+      <p style="font-family:var(--font-display);font-size:20px;color:var(--green-800);margin-bottom:8px;">Welcome to Green</p>
+      <p style="font-size:14px;color:var(--grey-400);line-height:1.6;margin-bottom:20px;">Your UK golf passport. Find a course, log your first round, and start building your map.</p>
+      <a href="courses.html" style="display:inline-block;padding:11px 24px;background:var(--green-700);color:white;border-radius:var(--radius-xl);font-size:14px;font-weight:500;">Find a course</a>
+    `;
+
+    const recentSection = document.querySelector('.section-header');
+    if (recentSection) recentSection.parentElement.insertBefore(empty, recentSection);
   }
 
   if (document.readyState === 'loading') {
