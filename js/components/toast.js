@@ -137,6 +137,29 @@ const Toast = (() => {
   }
 
   // ─── PUBLIC: SHOW ACHIEVEMENT ─────────────────────────────────────────────
+  // ─── PERSIST QUEUE ACROSS PAGES ──────────────────────────────────────────
+  function loadQueue() {
+    try {
+      const saved = sessionStorage.getItem('green_toast_queue');
+      if (saved) {
+        toastQueue.push(...JSON.parse(saved));
+        sessionStorage.removeItem('green_toast_queue');
+      }
+    } catch (e) {}
+  }
+
+  function saveQueue() {
+    try {
+      if (toastQueue.length) {
+        sessionStorage.setItem('green_toast_queue', JSON.stringify(toastQueue));
+      }
+    } catch (e) {}
+  }
+
+  window.addEventListener('pagehide', saveQueue);
+  loadQueue();
+  if (toastQueue.length) showNext();
+
   function achievement(icon, title) {
     toastQueue.push({ icon, label: 'Achievement Unlocked', title });
     showNext();
