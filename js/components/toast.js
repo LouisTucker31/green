@@ -25,7 +25,7 @@ const Toast = (() => {
     }
 
     .achievement-toast.visible {
-      bottom: calc(var(--nav-height) + env(safe-area-inset-bottom) + 12px);
+      bottom: 24px;
     }
 
     .achievement-toast-icon {

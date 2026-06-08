@@ -23,12 +23,19 @@ const ProfilePage = (() => {
     const removeBtn = document.getElementById('avatar-remove-btn');
 
     const avatarSheetCtrl = new Sheet('avatar-sheet', 'avatar-overlay');
+    let _pickingFile = false;
 
-    document.getElementById('avatar-wrap').addEventListener('click', () => avatarSheetCtrl.open());
+    document.getElementById('avatar-wrap').addEventListener('click', () => {
+      if (_pickingFile) return;
+      avatarSheetCtrl.open();
+    });
 
     changeBtn.addEventListener('click', () => {
       avatarSheetCtrl.close();
-      setTimeout(() => input.click(), 370);
+      setTimeout(() => {
+        _pickingFile = true;
+        input.click();
+      }, 370);
     });
 
     removeBtn.addEventListener('click', () => {
@@ -38,6 +45,7 @@ const ProfilePage = (() => {
     });
 
     input.addEventListener('change', () => {
+      _pickingFile = false;
       if (input.files[0]) {
         processFile(input.files[0], () => {
           setTimeout(() => avatarSheetCtrl.close(), 100);
