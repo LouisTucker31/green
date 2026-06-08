@@ -106,6 +106,7 @@
   align-items: center;
   justify-content: space-around;
   padding: 0 8px;
+  padding-bottom: env(safe-area-inset-bottom);
   z-index: 100;
 }
 
@@ -227,6 +228,6 @@
   align-items: center;
   justify-content: center;
   color: var(--white) !important;
-  margin-top: -14px;
+  margin-top: -18px;
   box-shadow: 0 4px 14px rgba(29, 74, 51, 0.4);
 }
