@@ -243,6 +243,7 @@
   align-items: center;
   justify-content: space-around;
   padding: 12px 16px;
+  min-width: 36px;
   border-top: 1px solid var(--grey-200);
   border-bottom: 1px solid var(--grey-200);
   margin-top: 20px;
@@ -253,6 +254,7 @@
   align-items: center;
   gap: 6px;
   padding: 8px 12px;
+  min-width: 36px;
   background: none;
   border: none;
   font-family: var(--font-body);

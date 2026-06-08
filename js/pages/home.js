@@ -83,7 +83,7 @@ function renderMap() {
     const empty = document.createElement('div');
     empty.id    = 'home-empty-state';
     empty.style.cssText = `
-      margin: 0 20px 24px;
+      margin: 16px 20px 24px;
       background: var(--white);
       border-radius: var(--radius-lg);
       padding: 28px 24px;
@@ -102,8 +102,8 @@ function renderMap() {
       <a href="courses.html" style="display:inline-block;padding:11px 24px;background:var(--green-700);color:white;border-radius:var(--radius-xl);font-size:14px;font-weight:500;">Find a course</a>
     `;
 
-    const recentSection = document.querySelector('.section-header');
-    if (recentSection) recentSection.parentElement.insertBefore(empty, recentSection);
+    const main = document.querySelector('.home-main');
+    if (main) main.insertBefore(empty, main.firstChild);
   }
 
   if (document.readyState === 'loading') {

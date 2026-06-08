@@ -17,8 +17,11 @@ const FeedPage = (() => {
 
     // Handle incoming hashtag from post page caption tap
     const params = new URLSearchParams(window.location.search);
+    const tab    = params.get('tab');
     const tag    = params.get('tag');
-    if (tag) {
+    if (tab === 'discover') {
+      switchTab('discover');
+    } else if (tag) {
       switchTab('discover');
       const input    = document.getElementById('discover-search-input');
       const clearBtn = document.getElementById('discover-search-clear');
@@ -308,7 +311,7 @@ const FeedPage = (() => {
     const unpostedRounds = rounds.filter(r => !DB.Posts.getByRoundId(r.id));
 
     if (!unpostedRounds.length) {
-      list.innerHTML = `<p class="picker-empty">No rounds to post.<br>All your rounds have been posted, or log a new round on a course page first.</p>`;
+      list.innerHTML = `<p class="picker-empty">No rounds available to post.<br>Head to a course to log one first.</p>`;
     } else {
       list.innerHTML = unpostedRounds.map(r => pickerItemHTML(r)).join('');
       list.querySelectorAll('.picker-item').forEach(item => {
@@ -512,7 +515,7 @@ const FeedPage = (() => {
       btn.addEventListener('click', e => {
         e.preventDefault();
         e.stopPropagation();
-        window.location.href = `post.html?id=${btn.dataset.postId}`;
+        window.location.href = `post.html?id=${btn.dataset.postId}#comment`;
       });
     });
   }

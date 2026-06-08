@@ -647,6 +647,7 @@
   align-items: center;
   gap: 5px;
   padding: 8px 10px;
+  min-width: 36px;
   background: none;
   border: none;
   font-family: var(--font-body);

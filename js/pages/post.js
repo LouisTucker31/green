@@ -10,6 +10,7 @@ const PostPage = (() => {
   function init() {
     const params = new URLSearchParams(window.location.search);
     postId = params.get('id');
+    const focusComment = window.location.hash === '#comment';
 
     post  = DB.Posts.getById(postId) || null;
 
@@ -33,6 +34,12 @@ const PostPage = (() => {
     renderLikesCount();
     renderComments();
     bindEvents();
+    if (focusComment) {
+      setTimeout(() => {
+        const input = document.getElementById('post-comment-input');
+        if (input) input.focus();
+      }, 400);
+    }
   }
 
   // ─── RENDER ──────────────────────────────────────────────────────────────

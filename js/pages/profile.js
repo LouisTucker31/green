@@ -38,7 +38,7 @@ const ProfilePage = (() => {
     });
 
     input.addEventListener('change', () => {
-      if (input.files[0]) processFile(input.files[0]);
+      if (input.files[0]) processFile(input.files[0], () => avatarSheetCtrl.close());
       input.value = '';
     });
   }
@@ -55,18 +55,18 @@ const ProfilePage = (() => {
   let _stageH     = 0;
   const CROP_SIZE = 280;
 
-  function processFile(file) {
+  function processFile(file, onComplete) {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = e => {
       const img = new Image();
-      img.onload = () => openCrop(img);
+      img.onload = () => openCrop(img, onComplete);
       img.src = e.target.result;
     };
     reader.readAsDataURL(file);
   }
 
-  function openCrop(img) {
+  function openCrop(img, onComplete) {
     _cropImg    = img;
     _cropCanvas = document.getElementById('crop-canvas');
     _cropCtx    = _cropCanvas.getContext('2d');
@@ -155,7 +155,7 @@ const ProfilePage = (() => {
     canvas.addEventListener('touchend', e => { lastTouches = Array.from(e.touches); });
 
     document.getElementById('crop-cancel-btn').onclick = closeCrop;
-    document.getElementById('crop-use-btn').onclick    = commitCrop;
+    document.getElementById('crop-use-btn').onclick    = () => { commitCrop(); if (onComplete) onComplete(); };
   }
 
   function closeCrop() {
@@ -177,6 +177,7 @@ const ProfilePage = (() => {
     DB.Profile.save({ avatar: output.toDataURL('image/jpeg', 0.85) });
     renderAvatar(DB.Profile.get());
     closeCrop();
+    avatarSheetCtrl.close();
   }
 
   // ─── RENDER ──────────────────────────────────────────────────────────────
@@ -253,7 +254,11 @@ const ProfilePage = (() => {
     const list    = document.getElementById('following-list');
 
     if (!handles.length) {
-      list.innerHTML = `<p class="following-empty">You're not following anyone yet.<br>Find people on the Discover tab.</p>`;
+      list.innerHTML = `
+        <div class="following-empty">
+          <p>You're not following anyone yet.</p>
+          <a href="feed.html?tab=discover" class="btn-primary" style="display:inline-block;margin-top:16px;padding:10px 24px;background:var(--green-700);color:white;border-radius:var(--radius-xl);font-size:14px;font-weight:500;">Find people</a>
+        </div>`;
       return;
     }
 
