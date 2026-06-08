@@ -40,7 +40,7 @@ a, button {
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
   --shadow-md: 0 4px 12px rgba(0,0,0,0.10);
 
-  --nav-height: 68px;
+  --nav-height: 80px;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
