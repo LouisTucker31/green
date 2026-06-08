@@ -83,7 +83,7 @@ function renderMap() {
     const empty = document.createElement('div');
     empty.id    = 'home-empty-state';
     empty.style.cssText = `
-      margin: 16px 20px 24px;
+      margin: 16px 0 24px;
       background: var(--white);
       border-radius: var(--radius-lg);
       padding: 28px 24px;

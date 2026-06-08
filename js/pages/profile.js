@@ -38,7 +38,11 @@ const ProfilePage = (() => {
     });
 
     input.addEventListener('change', () => {
-      if (input.files[0]) processFile(input.files[0], () => avatarSheetCtrl.close());
+      if (input.files[0]) {
+        processFile(input.files[0], () => {
+          setTimeout(() => avatarSheetCtrl.close(), 100);
+        });
+      }
       input.value = '';
     });
   }

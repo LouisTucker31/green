@@ -242,7 +242,7 @@
   display: flex;
   align-items: center;
   justify-content: space-around;
-  padding: 12px 16px;
+  padding: 12px 0;
   min-width: 36px;
   border-top: 1px solid var(--grey-200);
   border-bottom: 1px solid var(--grey-200);
@@ -252,8 +252,10 @@
 .post-action-btn {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  padding: 8px 12px;
+  padding: 8px 0;
+  flex: 1;
   min-width: 36px;
   background: none;
   border: none;

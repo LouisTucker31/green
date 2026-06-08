@@ -81,6 +81,7 @@ const CoursesPage = (() => {
     }
 
     navigator.geolocation.getCurrentPosition(pos => {
+      localStorage.setItem('green_location_pref', 'granted');
       _cachedCoords = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
       const { latitude, longitude } = _cachedCoords;
       renderNearby(latitude, longitude);

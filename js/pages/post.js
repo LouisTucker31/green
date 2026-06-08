@@ -36,9 +36,11 @@ const PostPage = (() => {
     bindEvents();
     if (focusComment) {
       setTimeout(() => {
+        const bar = document.getElementById('post-comment-bar');
         const input = document.getElementById('post-comment-input');
+        if (bar) bar.scrollIntoView({ behavior: 'smooth' });
         if (input) input.focus();
-      }, 400);
+      }, 600);
     }
   }
 
