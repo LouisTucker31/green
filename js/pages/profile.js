@@ -208,9 +208,23 @@ const ProfilePage = (() => {
 
     const name = profile.name || 'Your Name';
     document.getElementById('profile-name').textContent = name;
-    document.getElementById('profile-handle').textContent       = profile.handle || '';
-    document.getElementById('profile-handicap-display').textContent =
-      profile.handicap ? `Handicap ${profile.handicap}` : '';
+
+    const isLoggedIn = DB.Auth.isLoggedIn();
+    const handleEl   = document.getElementById('profile-handle');
+    const editBtn    = document.getElementById('edit-profile-btn');
+
+    if (isLoggedIn) {
+      handleEl.textContent = profile.handle || '';
+      handleEl.style.display = '';
+      editBtn.textContent = 'Edit Profile';
+      editBtn.onclick = null;
+    } else {
+      handleEl.innerHTML = `<a href="create-account.html" style="color:var(--green-700);font-size:13px;text-decoration:none;font-weight:500;">Sign in to sync your data →</a>`;
+      handleEl.style.display = '';
+      editBtn.textContent = 'Edit Profile';
+    }
+
+    document.getElementById('profile-handicap-display').textContent = '';
 
     document.getElementById('stat-courses').textContent   = playedIds.length;
     document.getElementById('stat-posts').textContent     = posts.length;
@@ -316,9 +330,36 @@ const ProfilePage = (() => {
           if (!posts.length) document.getElementById('profile-posts-empty').classList.remove('hidden');
         }
 
-        if (which === 'passport' && !_passportRendered) {
-          _passportRendered = true;
-          PassportPage.renderAll({ prefix: 'pp-' });
+        if (which === 'passport') {
+          const hasRounds = DB.Rounds.getAll().length > 0;
+          const panel     = document.getElementById('profile-passport-panel');
+          const tabs      = panel.querySelector('.passport-tabs');
+          let   emptyEl   = panel.querySelector('.passport-profile-empty');
+
+          if (!hasRounds) {
+            tabs.classList.add('hidden');
+            panel.querySelectorAll('.pp-passport-main').forEach(el => el.classList.add('hidden'));
+            if (!emptyEl) {
+              emptyEl = document.createElement('div');
+              emptyEl.className = 'passport-profile-empty';
+              emptyEl.innerHTML = `
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--grey-300)" stroke-width="1.5">
+                  <rect x="3" y="3" width="18" height="18" rx="3"/>
+                  <path d="M8 7h8M8 12h8M8 17h5"/>
+                </svg>
+                <p>No rounds logged yet.</p>
+                <p>Head to a course to get started.</p>
+              `;
+              panel.appendChild(emptyEl);
+            }
+          } else {
+            if (emptyEl) emptyEl.remove();
+            tabs.classList.remove('hidden');
+            if (!_passportRendered) {
+              _passportRendered = true;
+              PassportPage.renderAll({ prefix: 'pp-' });
+            }
+          }
         }
       });
     });

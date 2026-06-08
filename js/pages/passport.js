@@ -79,7 +79,7 @@ const PassportPage = (() => {
     if (!dots) return;
     dots.innerHTML  = '';
 
-    renderMapDots(`${p}passport-course-dots`, playedIds);
+    renderMapDots(`${p}passport-course-dots`, playedIds, (county) => openCountySheet(county, p));
 
     const playedCourses = COURSES_DATA.data.filter(c => playedIds.includes(c.id));
     const counties = new Set(playedCourses.map(c => c.county).filter(Boolean));

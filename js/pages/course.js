@@ -153,7 +153,7 @@ const CoursePage = (() => {
     }).join('');
   }
 
-  // ─── SHEET ───────────────────────────────────────────────────────────────
+    // ─── SHEET ───────────────────────────────────────────────────────────────
   const logSheetCtrl = new Sheet('log-sheet', 'sheet-overlay');
 
   function openSheet(round = null) {
@@ -225,6 +225,7 @@ const CoursePage = (() => {
       closeSheet();
       renderToggles();
       renderRounds();
+      if (!editingRoundId) Toast.show('⛳', 'Round Logged', course.name);
       if (typeof checkAchievements === 'function') checkAchievements();
     });
 

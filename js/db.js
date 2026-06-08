@@ -16,6 +16,7 @@ const DB = (() => {
     COMMENTS:     'green_comments',
     ACHIEVEMENTS: 'green_achievements_notified',
     LOCATION:     'green_location_pref',
+    SESSION:      'green_session',
   };
 
   // ─── HELPERS ────────────────────────────────────────────
@@ -463,6 +464,29 @@ const DB = (() => {
 
   };
 
+  // ─── AUTH ────────────────────────────────────────────────────────────────
+
+  const Auth = {
+
+    getSession() {
+      return read(KEYS.SESSION) || null;
+    },
+
+    isLoggedIn() {
+      const session = Auth.getSession();
+      return !!(session && session.loggedIn);
+    },
+
+    login({ handle, name }) {
+      write(KEYS.SESSION, { handle, name, loggedIn: true });
+    },
+
+    logout() {
+      try { localStorage.removeItem(KEYS.SESSION); } catch (e) {}
+    },
+
+  };
+
   // ─── DEBUG ───────────────────────────────────────────────────────────────
   // Call DB.debug() in browser console to inspect all stored data
 
@@ -485,6 +509,6 @@ const DB = (() => {
   }
 
   // ─── PUBLIC API ──────────────────────────────────────────
-  return { Rounds, Played, Wishlist, Favourites, Profile, Stats, Settings, Likes, Posts, Following, Comments, debug };
+  return { Rounds, Played, Wishlist, Favourites, Profile, Stats, Settings, Likes, Posts, Following, Comments, Auth, debug };
 
 })();

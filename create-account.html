@@ -1,0 +1,139 @@
+<!-- Green PWA | Create Account -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#f7f4ef" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Green" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <title>Green – Create Account</title>
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/pages/auth.css" />
+</head>
+<body>
+
+  <div class="page auth-page">
+
+    <div class="auth-header">
+      <div class="auth-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--green-700)" stroke-width="1.5">
+          <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+          <line x1="4" y1="22" x2="4" y2="15"/>
+        </svg>
+      </div>
+      <h1 class="auth-logo">Green</h1>
+      <p class="auth-tagline">Your UK golf passport</p>
+    </div>
+
+    <main class="auth-main">
+
+      <div class="auth-form">
+
+        <div class="auth-field">
+          <label class="auth-label" for="input-name">Your name</label>
+          <input class="auth-input" id="input-name" type="text" placeholder="James Wilson" maxlength="50" autocomplete="name" />
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label" for="input-handle">Handle</label>
+          <input class="auth-input" id="input-handle" type="text" placeholder="jameswilson" maxlength="30" autocomplete="username" autocorrect="off" autocapitalize="none" />
+          <span class="auth-hint">Letters, numbers and underscores only</span>
+          <span class="auth-error" id="handle-error"></span>
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label" for="input-handicap">Handicap <span style="font-weight:400;color:var(--grey-400)">(optional)</span></label>
+          <input class="auth-input" id="input-handicap" type="number" placeholder="e.g. 8.3" min="0" max="54" step="0.1" />
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label" for="input-password">Password</label>
+          <input class="auth-input" id="input-password" type="password" placeholder="At least 8 characters" maxlength="100" autocomplete="new-password" />
+          <span class="auth-error" id="password-error"></span>
+        </div>
+
+        <button class="auth-submit" id="create-btn">Create account</button>
+
+      </div>
+
+      <div class="auth-divider">
+        <div class="auth-divider-line"></div>
+        <span class="auth-divider-text">already have an account?</span>
+        <div class="auth-divider-line"></div>
+      </div>
+
+      <div class="auth-switch">
+        <a href="login.html">Log in</a>
+      </div>
+
+      <div class="auth-skip">
+        <a href="index.html" id="skip-btn">Continue without an account</a>
+      </div>
+
+    </main>
+
+  </div>
+
+  <script src="js/db.js"></script>
+  <script>
+    (function () {
+
+      function sanitiseHandle(raw) {
+        return raw.toLowerCase().replace(/[^a-z0-9_]/g, '').slice(0, 30);
+      }
+
+      function validateHandle(handle) {
+        if (!handle) return 'Handle is required';
+        if (handle.length < 3) return 'Must be at least 3 characters';
+        if (!/^[a-z0-9_]+$/.test(handle)) return 'Only letters, numbers and underscores';
+        return null;
+      }
+
+      const nameEl     = document.getElementById('input-name');
+      const handleEl  = document.getElementById('input-handle');
+      const handicapEl = document.getElementById('input-handicap');
+      const passwordEl = document.getElementById('input-password');
+      const handleErr = document.getElementById('handle-error');
+      const passErr   = document.getElementById('password-error');
+      const createBtn = document.getElementById('create-btn');
+
+      // Sanitise handle live
+      handleEl.addEventListener('input', () => {
+        const pos = handleEl.selectionStart;
+        handleEl.value = sanitiseHandle(handleEl.value);
+        handleEl.setSelectionRange(pos, pos);
+        handleErr.textContent = '';
+      });
+
+      createBtn.addEventListener('click', () => {
+        const name     = nameEl.value.trim().slice(0, 50);
+        const handle   = sanitiseHandle(handleEl.value);
+        const password = passwordEl.value;
+        const rawHcp   = parseFloat(handicapEl.value);
+        const handicap = !isNaN(rawHcp) && rawHcp >= 0 && rawHcp <= 54 ? rawHcp : null;
+
+        // Validate
+        const handleError = validateHandle(handle);
+        if (handleError) { handleErr.textContent = handleError; return; }
+        handleErr.textContent = '';
+
+        if (password.length < 8) { passErr.textContent = 'Password must be at least 8 characters'; return; }
+        passErr.textContent = '';
+
+        // Save profile and session
+        // Password not stored locally — backend will handle auth
+        DB.Profile.save({ name, handle: '@' + handle, handicap });
+        DB.Auth.login({ handle: '@' + handle, name });
+        window.location.href = 'profile.html';
+      });
+
+    })();
+  </script>
+
+</body>
+</html>

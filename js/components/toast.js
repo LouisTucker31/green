@@ -86,14 +86,14 @@ const Toast = (() => {
     if (isShowing || !toastQueue.length) return;
     isShowing = true;
 
-    const { icon, title } = toastQueue.shift();
+    const { icon, label, title } = toastQueue.shift();
 
     const toast = document.createElement('div');
     toast.className = 'achievement-toast';
     toast.innerHTML = `
       <div class="achievement-toast-icon">${icon}</div>
       <div class="achievement-toast-body">
-        <span class="achievement-toast-label">Achievement Unlocked</span>
+        <span class="achievement-toast-label">${label}</span>
         <span class="achievement-toast-title">${title}</span>
       </div>
       <button class="achievement-toast-close" aria-label="Dismiss">
@@ -138,11 +138,17 @@ const Toast = (() => {
 
   // ─── PUBLIC: SHOW ACHIEVEMENT ─────────────────────────────────────────────
   function achievement(icon, title) {
-    toastQueue.push({ icon, title });
+    toastQueue.push({ icon, label: 'Achievement Unlocked', title });
     showNext();
   }
 
-  return { achievement };
+  // ─── PUBLIC: SHOW GENERIC TOAST ──────────────────────────────────────────
+  function show(icon, label, title) {
+    toastQueue.push({ icon, label, title });
+    showNext();
+  }
+
+  return { achievement, show };
 
 })();
 

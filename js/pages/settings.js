@@ -44,6 +44,21 @@ const SettingsPage = (() => {
     });
 
     // ─── CLEAR DATA ──────────────────────────────────────────
+    // ─── SIGN OUT ────────────────────────────────────────────
+    const signOutRow = document.getElementById('sign-out-row');
+    const signOutDivider = document.getElementById('sign-out-divider');
+    if (DB.Auth.isLoggedIn()) {
+      document.getElementById('sign-out-btn').textContent = 'Log out';
+      document.getElementById('sign-out-btn').addEventListener('click', () => {
+        if (confirm('Log out of your account?')) {
+          DB.Auth.logout();
+          window.location.href = 'login.html';
+        }
+      });
+    } else {
+      document.getElementById('sign-out-btn').outerHTML = `<a href="login.html" style="color:var(--grey-900);font-size:15px;font-weight:500;text-decoration:none;">Log in</a>`;
+    }
+
     document.getElementById('clear-data-btn').addEventListener('click', () => {
       if (confirm('This will delete all your rounds, played courses, wishlist and profile data. This cannot be undone.')) {
         localStorage.clear();

@@ -14,6 +14,7 @@ const FeedPage = (() => {
     bindNewPost();
     bindEmptyLinks();
     bindDiscover();
+    renderLocalModeBanner('panel-following');
 
     // Handle incoming hashtag from post page caption tap
     const params = new URLSearchParams(window.location.search);
@@ -80,18 +81,20 @@ const FeedPage = (() => {
   // ─── DISCOVER TAB ────────────────────────────────────────────────────────
 
   function renderDiscover() {
-    const allPosts = DB.Posts.getAllSorted();
-    const profile  = DB.Profile.get();
-    const list     = document.getElementById('discover-list');
-    const empty    = document.getElementById('discover-empty');
+    const allPosts    = DB.Posts.getAllSorted();
+    const profile     = DB.Profile.get();
+    const list        = document.getElementById('discover-list');
+    const empty       = document.getElementById('discover-empty');
+    const postsEmpty  = document.getElementById('discover-posts-empty');
 
     // For now show all posts (when backend exists, filter to non-followed users)
     if (!allPosts.length) {
       list.innerHTML = '';
-      empty.classList.remove('hidden');
+      if (postsEmpty) postsEmpty.classList.remove('hidden');
       return;
     }
 
+    if (postsEmpty) postsEmpty.classList.add('hidden');
     empty.classList.add('hidden');
     list.innerHTML = allPosts.map(p => cardHTML(p, profile)).join('');
     bindCardEvents('discover-list');
@@ -221,7 +224,7 @@ const FeedPage = (() => {
     const name     = profile.name   || 'You';
     const handle   = profile.handle || '';
     const caption  = post.caption
-      ? `<p class="feed-notes">${parseCaption(truncateWords(post.caption, 60))}</p>`
+      ? `<p class="feed-notes">${parseCaption(truncateWords(post.caption, 60), true)}</p>`
       : '';
     const photo    = post.photos && post.photos.length
       ? `<div class="feed-card-photo"><img src="${post.photos[0]}" alt="Post photo" /></div>`
@@ -357,9 +360,60 @@ const FeedPage = (() => {
     avatarEl.innerHTML = avatarHTML(profile);
     caption.value = '';
     renderPhotoGrid();
+    bindHashtagSuggestions(caption);
 
     screen.classList.remove('hidden');
     caption.focus();
+  }
+
+  function bindHashtagSuggestions(textarea) {
+    const strip = document.getElementById('hashtag-suggestions');
+    if (!strip) return;
+
+    // Build unique hashtag list from existing post captions
+    const allTags = [];
+    DB.Posts.getAll().forEach(p => {
+      if (!p.caption) return;
+      const matches = p.caption.match(/#[a-zA-Z0-9_]+/g) || [];
+      matches.forEach(t => { if (!allTags.includes(t)) allTags.push(t); });
+    });
+
+    textarea.addEventListener('input', () => {
+      const val    = textarea.value;
+      const cursor = textarea.selectionStart;
+      const before = val.slice(0, cursor);
+      const match  = before.match(/#([a-zA-Z0-9_]*)$/);
+
+      if (!match) {
+        strip.classList.add('hidden');
+        return;
+      }
+
+      const partial = match[1].toLowerCase();
+      const matches = allTags.filter(t =>
+        t.slice(1).toLowerCase().startsWith(partial) && t.slice(1) !== partial
+      );
+
+      if (!matches.length) {
+        strip.classList.add('hidden');
+        return;
+      }
+
+      strip.classList.remove('hidden');
+      strip.innerHTML = matches.slice(0, 6).map(t =>
+        `<span class="hashtag-chip">${escapeHTML(t)}</span>`
+      ).join('');
+
+      strip.querySelectorAll('.hashtag-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          const tag    = chip.textContent;
+          const start  = before.lastIndexOf('#');
+          textarea.value = val.slice(0, start) + tag + val.slice(cursor);
+          textarea.focus();
+          strip.classList.add('hidden');
+        });
+      });
+    });
   }
 
   function closeCompose() {
@@ -560,9 +614,10 @@ const FeedPage = (() => {
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', () => { init(); initPullToRefresh(() => { activeTab === 'following' ? renderFollowing() : renderDiscover(); }); });
   } else {
     init();
+    initPullToRefresh(() => { activeTab === 'following' ? renderFollowing() : renderDiscover(); });
   }
 
   window.addEventListener('pageshow', e => {

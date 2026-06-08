@@ -78,7 +78,17 @@
       <!-- DISCOVER FEED (shown when not searching) -->
       <div class="feed-list" id="discover-list"></div>
 
-      <!-- DISCOVER EMPTY -->
+      <!-- DISCOVER EMPTY: no posts yet -->
+      <div class="feed-empty hidden" id="discover-posts-empty">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--grey-200)" stroke-width="1.4">
+          <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+          <line x1="4" y1="22" x2="4" y2="15"/>
+        </svg>
+        <p class="feed-empty-title">Nothing to discover yet</p>
+        <p class="feed-empty-sub">Posts from other golfers will appear here</p>
+      </div>
+
+      <!-- DISCOVER EMPTY: no search results -->
       <div class="feed-empty hidden" id="discover-empty">
         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--grey-200)" stroke-width="1.4">
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
@@ -168,6 +178,7 @@
       <div class="compose-avatar-row">
         <div class="compose-avatar" id="compose-avatar"></div>
         <textarea class="compose-caption" id="compose-caption" placeholder="Write a caption…" rows="4" maxlength="500"></textarea>
+        <div class="hashtag-suggestions hidden" id="hashtag-suggestions"></div>
       </div>
     </div>
   </div>

@@ -126,3 +126,77 @@ button,
 .hidden { display: none !important; }
 img { display: block; max-width: 100%; }
 button { font-family: var(--font-body); cursor: pointer; border: none; background: none; }
+
+/* ─── LOCAL MODE BANNER ─── */
+.local-mode-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 20px 4px;
+  padding: 10px 14px;
+  background: var(--green-50);
+  border: 1px solid var(--green-100);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  color: var(--grey-600);
+  line-height: 1.4;
+}
+
+.local-mode-banner a {
+  color: var(--green-700);
+  font-weight: 600;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+/* ─── MAP DOT ANIMATION ─── */
+@keyframes dot-pop {
+  from { transform: scale(0); opacity: 0; }
+  to   { transform: scale(1); opacity: 0.85; }
+}
+
+/* ─── PULL TO REFRESH ─── */
+.ptr-indicator {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(-60px);
+  width: 36px;
+  height: 36px;
+  background: var(--white);
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+  z-index: 999;
+}
+
+.ptr-indicator.ptr-visible {
+  transform: translateX(-50%) translateY(12px);
+}
+
+.ptr-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--grey-200);
+  border-top-color: var(--green-700);
+  border-radius: 50%;
+  animation: ptr-spin 0.7s linear infinite;
+}
+
+@keyframes ptr-spin {
+  to { transform: rotate(360deg); }
+}
+
+.local-mode-banner-dismiss {
+  background: none;
+  border: none;
+  color: var(--grey-400);
+  cursor: pointer;
+  padding: 2px;
+  flex-shrink: 0;
+  line-height: 0;
+}

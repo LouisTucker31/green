@@ -876,3 +876,21 @@
 .profile-follow-btn:active {
   opacity: 0.8;
 }
+
+/* PASSPORT EMPTY STATE */
+.passport-profile-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--grey-400);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.passport-profile-empty p {
+  margin: 0;
+}

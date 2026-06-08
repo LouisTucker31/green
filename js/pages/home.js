@@ -6,6 +6,7 @@ const HomePage = (() => {
     renderStats();
     renderMap();
     renderRecentRounds();
+    renderLocalModeBanner('home-main');
   }
 
   function renderStats() {
@@ -73,9 +74,10 @@ function renderMap() {
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', () => { init(); initPullToRefresh(init); });
   } else {
     init();
+    initPullToRefresh(init);
   }
 
   window.addEventListener('pageshow', e => {

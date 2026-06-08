@@ -1,11 +1,13 @@
 // Green PWA | Service Worker — caching and offline support
 
-const CACHE_NAME = 'green-v8';
+const CACHE_NAME = 'green-v9';
 
 const STATIC_ASSETS = [
   '.',
   'index.html',
   'offline.html',
+  'create-account.html',
+  'login.html',
   'courses.html',
   'course.html',
   'passport.html',
@@ -18,6 +20,7 @@ const STATIC_ASSETS = [
   'manifest.json',
   'ukLow.svg',
   'css/base.css',
+  'css/pages/auth.css',
   'css/layout.css',
   'css/pages/course.css',
   'css/pages/courses.css',

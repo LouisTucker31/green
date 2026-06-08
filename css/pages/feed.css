@@ -237,6 +237,32 @@
   color: var(--grey-400);
 }
 
+.hashtag-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 0 4px;
+}
+
+.hashtag-suggestions.hidden {
+  display: none;
+}
+
+.hashtag-chip {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--green-700);
+  background: var(--green-100);
+  border-radius: 20px;
+  padding: 4px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.hashtag-chip:active {
+  background: var(--green-200);
+}
+
 /* ─── PHOTO SECTION ─── */
 .compose-photos-section {
   display: flex;
