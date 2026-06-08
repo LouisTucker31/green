@@ -181,7 +181,6 @@ const ProfilePage = (() => {
     DB.Profile.save({ avatar: output.toDataURL('image/jpeg', 0.85) });
     renderAvatar(DB.Profile.get());
     closeCrop();
-    avatarSheetCtrl.close();
   }
 
   // ─── RENDER ──────────────────────────────────────────────────────────────

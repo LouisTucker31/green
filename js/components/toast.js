@@ -7,7 +7,7 @@ const Toast = (() => {
   style.textContent = `
     .achievement-toast {
       position: fixed;
-      top: -160px;
+      bottom: -120px;
       left: 50%;
       transform: translateX(-50%);
       width: calc(100% - 32px);
@@ -20,12 +20,12 @@ const Toast = (() => {
       gap: 12px;
       z-index: 999;
       box-shadow: 0 4px 20px rgba(0,0,0,0.25);
-      transition: top 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+      transition: bottom 0.4s cubic-bezier(0.32, 0.72, 0, 1);
       cursor: pointer;
     }
 
     .achievement-toast.visible {
-      top: calc(env(safe-area-inset-top, 44px) + 8px);
+      bottom: calc(var(--nav-height) + env(safe-area-inset-bottom) + 12px);
     }
 
     .achievement-toast-icon {
