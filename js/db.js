@@ -483,7 +483,7 @@ const DB = (() => {
         if (userIds.length) {
           const { data: profiles } = await supabaseClient
             .from('profiles')
-            .select('id, handle, display_name')
+            .select('id, handle, display_name, avatar_url')
             .in('id', userIds);
           (profiles || []).forEach(p => { profileMap[p.id] = p; });
         }
@@ -494,6 +494,7 @@ const DB = (() => {
             ...Posts._fromRow(row),
             authorName:   prof.display_name || prof.handle || 'Unknown',
             authorHandle: prof.handle ? '@' + prof.handle : '',
+            authorAvatar: prof.avatar_url || null,
           };
         });
       } catch (e) {
@@ -688,6 +689,9 @@ const DB = (() => {
           }
         }
       }
+
+      // Invalidate posts cache so feed re-fetches fresh counts on next load
+      Posts._cache = null;
     },
 
   };
@@ -757,6 +761,7 @@ const DB = (() => {
       const comment = Comments._fromRow(data);
       if (!Comments._cache[postId]) Comments._cache[postId] = [];
       Comments._cache[postId].push(comment);
+      Posts._cache = null; // invalidate so feed re-fetches fresh counts
       return comment;
     },
 
@@ -777,6 +782,7 @@ const DB = (() => {
       if (Comments._cache[postId]) {
         Comments._cache[postId] = Comments._cache[postId].filter(c => c.id !== commentId);
       }
+      Posts._cache = null; // invalidate so feed re-fetches fresh counts
     },
 
   };

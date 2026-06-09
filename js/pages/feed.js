@@ -99,6 +99,7 @@ const FeedPage = (() => {
     list.innerHTML = allPosts.map(p => cardHTML(p, DB.Profile.getCached(), {
       name:   p.authorName,
       handle: p.authorHandle,
+      avatar: p.authorAvatar,
     })).join('');
     bindCardEvents('discover-list');
   }
@@ -224,8 +225,13 @@ const FeedPage = (() => {
   function cardHTML(post, profile, author = null) {
     const date     = formatDate(post.date);
     const name     = (author && author.name)   || profile.name   || 'You';
-    const handle   = (author && author.handle) || profile.handle || '';
-    const avatar   = author ? `<div class="feed-avatar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green-700)" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>` : avatarHTML(profile);
+    const rawHandle = (author && author.handle) || profile.handle || '';
+    const handle   = rawHandle && !rawHandle.startsWith('@') ? '@' + rawHandle : rawHandle;
+    const avatar   = author
+      ? (author.avatar
+          ? `<div class="feed-avatar"><img src="${author.avatar}" alt="Avatar" /></div>`
+          : `<div class="feed-avatar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green-700)" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>`)
+      : avatarHTML(profile);
     const caption  = post.caption
       ? `<p class="feed-notes">${parseCaption(truncateWords(post.caption, 60), true)}</p>`
       : '';
