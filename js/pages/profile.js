@@ -38,7 +38,7 @@ const ProfilePage = (() => {
       }, 370);
     });
 
-    removeBtn.addEventListener('click', () => {
+    removeBtn.addEventListener('click', async () => {
       avatarSheetCtrl.close();
       await DB.Profile.save({ avatar: null });
       renderAvatar(DB.Profile.getCached());
