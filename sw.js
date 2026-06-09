@@ -1,6 +1,6 @@
 // Green PWA | Service Worker — caching and offline support
 
-const CACHE_NAME = 'green-v14';
+const CACHE_NAME = 'green-v15';
 
 const STATIC_ASSETS = [
   '.',

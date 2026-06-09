@@ -530,6 +530,7 @@ const PostPage = (() => {
       renderComments();
       post.commentCount = (post.commentCount || 0) + 1;
     } catch (e) {
+      console.error('[Comment.add]', e);
       alert('Failed to post comment. Please try again.');
       input.value = text;
     } finally {
