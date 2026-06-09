@@ -681,7 +681,7 @@ const DB = (() => {
       try {
         const { data, error } = await supabaseClient
           .from('comments')
-          .select('id, post_id, user_id, handle, text, created_at')
+          .select('id, post_id, user_id, handle, body, created_at')
           .eq('post_id', postId)
           .order('created_at', { ascending: true });
 
@@ -699,7 +699,7 @@ const DB = (() => {
         postId:    row.post_id,
         userId:    row.user_id,
         handle:    row.handle || '',
-        text:      row.text   || '',
+        text:      row.body   || '',
         createdAt: new Date(row.created_at).getTime(),
       };
     },
@@ -723,7 +723,7 @@ const DB = (() => {
 
       const { data, error } = await supabaseClient
         .from('comments')
-        .insert({ post_id: postId, user_id: session.user.id, handle, text })
+        .insert({ post_id: postId, user_id: session.user.id, handle, body: text })
         .select()
         .single();
 
