@@ -4,12 +4,13 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   background: var(--cream);
   padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
 }
 
 .auth-header {
-  padding: 28px 24px 0;
+  padding: 0 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -32,8 +33,7 @@
 }
 
 .auth-main {
-  flex: 1;
-  padding: 20px 24px 24px;
+  padding: 24px 24px 0;
   display: flex;
   flex-direction: column;
   gap: 12px;
