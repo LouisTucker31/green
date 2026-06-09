@@ -390,7 +390,11 @@ const DB = (() => {
 
     _fromRow(row) {
       let photos = [];
-      try { photos = JSON.parse(row.photos || '[]'); } catch (_) {}
+      if (Array.isArray(row.photos)) {
+        photos = row.photos; // already parsed (from localStorage cache)
+      } else {
+        try { photos = JSON.parse(row.photos || '[]'); } catch (_) {}
+      }
       return {
         id:         row.id,
         roundId:    row.round_id   || null,
@@ -442,6 +446,7 @@ const DB = (() => {
 
         if (error) throw error;
 
+        // Replace localStorage with clean Supabase data, evicting any pre-migration posts
         Posts._cache = data.map(Posts._fromRow);
         write(KEYS.POSTS, Posts._cache);
         return Posts._cache;
