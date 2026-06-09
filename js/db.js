@@ -278,17 +278,27 @@ const DB = (() => {
 
       let session = null;
       try { ({ data: { session } } = await supabaseClient.auth.getSession()); } catch (_) {}
-      if (!session) return;
+      if (!session) { console.log('[Profile.save] no session, skipping remote save'); return; }
+
+      const payload = {
+        id:           session.user.id,
+        handle:       next.handle ? next.handle.replace('@', '') : '',
+        display_name: next.name   || '',
+        avatar_url:   next.avatar || null,
+      };
+      console.log('[Profile.save] upserting to profiles:', payload);
 
       try {
-        await supabaseClient.from('profiles').upsert({
-          id:           session.user.id,
-          handle:       next.handle ? next.handle.replace('@', '') : '',
-          display_name: next.name   || '',
-          avatar_url:   next.avatar || null,
-        }, { onConflict: 'id' });
+        const { data, error } = await supabaseClient
+          .from('profiles')
+          .upsert(payload, { onConflict: 'id' });
+        if (error) {
+          console.error('[Profile.save] upsert error:', error);
+        } else {
+          console.log('[Profile.save] upsert success:', data);
+        }
       } catch (e) {
-        console.warn('DB.Profile.save remote upsert failed', e);
+        console.error('[Profile.save] upsert threw:', e);
       }
     },
 

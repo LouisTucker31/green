@@ -198,23 +198,31 @@ const ProfilePage = (() => {
     // Upload to Supabase Storage in the background and update with the public URL
     try {
       const { data: { session } } = await supabaseClient.auth.getSession();
-      if (session) {
-        const blob = await new Promise(resolve => output.toBlob(resolve, 'image/jpeg', 0.85));
-        const path = `${session.user.id}/avatar.jpg`;
-        const { error: uploadError } = await supabaseClient.storage
-          .from('avatars')
-          .upload(path, blob, { contentType: 'image/jpeg', upsert: true });
+      if (!session) { console.log('[Avatar] no session, skipping upload'); return; }
 
-        if (!uploadError) {
-          const { data: { publicUrl } } = supabaseClient.storage
-            .from('avatars')
-            .getPublicUrl(path);
-          await DB.Profile.save({ avatar: publicUrl });
-          renderAvatar(DB.Profile.getCached());
-        }
+      const blob = await new Promise(resolve => output.toBlob(resolve, 'image/jpeg', 0.85));
+      const path = `${session.user.id}/avatar.jpg`;
+      console.log('[Avatar] uploading to storage path:', path, 'blob size:', blob.size);
+
+      const { data: uploadData, error: uploadError } = await supabaseClient.storage
+        .from('avatars')
+        .upload(path, blob, { contentType: 'image/jpeg', upsert: true });
+
+      if (uploadError) {
+        console.error('[Avatar] storage upload error:', uploadError);
+        return;
       }
+      console.log('[Avatar] storage upload success:', uploadData);
+
+      const { data: { publicUrl } } = supabaseClient.storage
+        .from('avatars')
+        .getPublicUrl(path);
+      console.log('[Avatar] public URL:', publicUrl);
+
+      await DB.Profile.save({ avatar: publicUrl });
+      renderAvatar(DB.Profile.getCached());
     } catch (e) {
-      console.warn('Avatar upload failed, keeping local copy', e);
+      console.error('[Avatar] upload threw:', e);
     }
   }
 
