@@ -85,28 +85,31 @@ function initPullToRefresh(onRefresh) {
 }
 
 function renderLocalModeBanner(containerId) {
-  if (DB.Auth.isLoggedIn()) return;
   if (sessionStorage.getItem('green_banner_dismissed')) return;
   if (document.querySelector('.local-mode-banner')) return;
 
-  const container = document.getElementById(containerId);
-  if (!container) return;
+  window.supabase.auth.getSession().then(({ data: { session } }) => {
+    if (session) return;
 
-  const banner = document.createElement('div');
-  banner.className = 'local-mode-banner';
-  banner.innerHTML = `
-    <span>You're in local mode — data is saved on this device only. <a href="create-account.html">Create account</a></span>
-    <button class="local-mode-banner-dismiss" aria-label="Dismiss">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-      </svg>
-    </button>
-  `;
+    const container = document.getElementById(containerId);
+    if (!container) return;
 
-  banner.querySelector('.local-mode-banner-dismiss').addEventListener('click', () => {
-    sessionStorage.setItem('green_banner_dismissed', '1');
-    banner.remove();
+    const banner = document.createElement('div');
+    banner.className = 'local-mode-banner';
+    banner.innerHTML = `
+      <span>You're in local mode — data is saved on this device only. <a href="create-account.html">Create account</a></span>
+      <button class="local-mode-banner-dismiss" aria-label="Dismiss">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    `;
+
+    banner.querySelector('.local-mode-banner-dismiss').addEventListener('click', () => {
+      sessionStorage.setItem('green_banner_dismissed', '1');
+      banner.remove();
+    });
+
+    container.parentElement.insertBefore(banner, container);
   });
-
-  container.parentElement.insertBefore(banner, container);
 }

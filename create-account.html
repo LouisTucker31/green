@@ -52,6 +52,12 @@
         </div>
 
         <div class="auth-field">
+          <label class="auth-label" for="input-email">Email</label>
+          <input class="auth-input" id="input-email" type="email" placeholder="james@example.com" maxlength="254" autocomplete="email" autocorrect="off" autocapitalize="none" />
+          <span class="auth-error" id="email-error"></span>
+        </div>
+
+        <div class="auth-field">
           <label class="auth-label" for="input-password">Password</label>
           <input class="auth-input" id="input-password" type="password" placeholder="At least 8 characters" maxlength="100" autocomplete="new-password" />
           <span class="auth-error" id="password-error"></span>
@@ -79,6 +85,7 @@
 
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/db.js"></script>
   <script>
     (function () {
@@ -97,8 +104,10 @@
       const nameEl     = document.getElementById('input-name');
       const handleEl  = document.getElementById('input-handle');
       const handicapEl = document.getElementById('input-handicap');
+      const emailEl   = document.getElementById('input-email');
       const passwordEl = document.getElementById('input-password');
       const handleErr = document.getElementById('handle-error');
+      const emailErr  = document.getElementById('email-error');
       const passErr   = document.getElementById('password-error');
       const createBtn = document.getElementById('create-btn');
 
@@ -110,9 +119,10 @@
         handleErr.textContent = '';
       });
 
-      createBtn.addEventListener('click', () => {
+      createBtn.addEventListener('click', async () => {
         const name     = nameEl.value.trim().slice(0, 50);
         const handle   = sanitiseHandle(handleEl.value);
+        const email    = emailEl.value.trim();
         const password = passwordEl.value;
         const rawHcp   = parseFloat(handicapEl.value);
         const handicap = !isNaN(rawHcp) && rawHcp >= 0 && rawHcp <= 54 ? rawHcp : null;
@@ -122,14 +132,37 @@
         if (handleError) { handleErr.textContent = handleError; return; }
         handleErr.textContent = '';
 
+        if (!email) { emailErr.textContent = 'Email is required'; return; }
+        emailErr.textContent = '';
+
         if (password.length < 8) { passErr.textContent = 'Password must be at least 8 characters'; return; }
         passErr.textContent = '';
 
-        // Save profile and session
-        // Password not stored locally — backend will handle auth
-        DB.Profile.save({ name, handle: '@' + handle, handicap });
-        DB.Auth.login({ handle: '@' + handle, name });
-        window.location.href = 'profile.html';
+        createBtn.disabled = true;
+        createBtn.textContent = 'Creating account…';
+
+        const { data, error } = await window.supabase.auth.signUp({ email, password });
+
+        if (error) {
+          passErr.textContent = error.message;
+          createBtn.disabled = false;
+          createBtn.textContent = 'Create account';
+          return;
+        }
+
+        const userId = data.user.id;
+        const { error: profileError } = await window.supabase
+          .from('profiles')
+          .insert({ id: userId, handle, display_name: name });
+
+        if (profileError) {
+          passErr.textContent = profileError.message;
+          createBtn.disabled = false;
+          createBtn.textContent = 'Create account';
+          return;
+        }
+
+        window.location.href = 'index.html';
       });
 
     })();

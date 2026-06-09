@@ -35,8 +35,8 @@
       <div class="auth-form">
 
         <div class="auth-field">
-          <label class="auth-label" for="input-handle">Handle</label>
-          <input class="auth-input" id="input-handle" type="text" placeholder="jameswilson" maxlength="30" autocomplete="username" autocorrect="off" autocapitalize="none" />
+          <label class="auth-label" for="input-email">Email</label>
+          <input class="auth-input" id="input-email" type="email" placeholder="james@example.com" maxlength="254" autocomplete="email" autocorrect="off" autocapitalize="none" />
         </div>
 
         <div class="auth-field">
@@ -68,35 +68,45 @@
 
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/db.js"></script>
   <script>
     (function () {
 
-      const handleEl  = document.getElementById('input-handle');
+      const emailEl  = document.getElementById('input-email');
+      const passwordEl = document.getElementById('input-password');
       const loginErr  = document.getElementById('login-error');
       const loginBtn  = document.getElementById('login-btn');
 
-      loginBtn.addEventListener('click', () => {
-        const handle = '@' + handleEl.value.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
+      loginBtn.addEventListener('click', async () => {
+        const email    = emailEl.value.trim();
+        const password = passwordEl.value;
 
         loginErr.textContent = '';
 
-        const profile = DB.Profile.get();
+        if (!email) { loginErr.textContent = 'Email is required'; return; }
+        if (!password) { loginErr.textContent = 'Password is required'; return; }
 
-        // Mock auth — compare stored handle and password
-        if (profile.handle !== handle) {
-          loginErr.textContent = 'No account found with that handle on this device';
+        loginBtn.disabled = true;
+        loginBtn.textContent = 'Logging in…';
+
+        const { error } = await window.supabase.auth.signInWithPassword({ email, password });
+
+        if (error) {
+          loginErr.textContent = error.message;
+          loginBtn.disabled = false;
+          loginBtn.textContent = 'Log in';
           return;
         }
 
-        // Password check skipped in local mode — backend will verify
-
-        DB.Auth.login({ handle: profile.handle, name: profile.name });
         window.location.href = 'index.html';
       });
 
       // Allow Enter key
-      handleEl.addEventListener('keydown', e => {
+      emailEl.addEventListener('keydown', e => {
+        if (e.key === 'Enter') loginBtn.click();
+      });
+      passwordEl.addEventListener('keydown', e => {
         if (e.key === 'Enter') loginBtn.click();
       });
 
