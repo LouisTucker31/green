@@ -522,7 +522,7 @@
   overflow: hidden;
   color: inherit;
   display: block;
-  text-decoration: none;
+  cursor: pointer;
   transition: background 0.15s;
 }
 

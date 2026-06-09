@@ -235,7 +235,7 @@ const FeedPage = (() => {
     const comments = getCommentCount(post.id);
 
     return `
-      <a class="feed-card" data-post-id="${post.id}" href="post.html?id=${post.id}">
+      <div class="feed-card" data-post-id="${post.id}" data-href="post.html?id=${post.id}">
         <div class="feed-card-header">
           ${avatar}
           <div class="feed-author">
@@ -277,7 +277,7 @@ const FeedPage = (() => {
             </svg>
           </button>
         </div>
-      </a>`;
+      </div>`;
   }
 
   // ─── NEW POST FLOW ───────────────────────────────────────────────────────
@@ -544,6 +544,13 @@ const FeedPage = (() => {
   function bindCardEvents(listId = 'feed-list') {
     const container = document.getElementById(listId);
     if (!container) return;
+
+    container.querySelectorAll('.feed-card').forEach(card => {
+      card.addEventListener('click', e => {
+        if (e.target.closest('button')) return;
+        window.location.href = card.dataset.href;
+      });
+    });
 
     container.querySelectorAll('.feed-share-btn').forEach(btn => {
       if (!navigator.share) { btn.style.display = 'none'; return; }
