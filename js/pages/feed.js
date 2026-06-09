@@ -671,12 +671,21 @@ const FeedPage = (() => {
     initPullToRefresh(() => { activeTab === 'following' ? renderFollowing() : renderDiscover(); });
   }
 
+  function refreshFeed() {
+    DB.Posts._cache = null;
+    if (activeTab === 'discover') {
+      renderDiscover();
+    } else {
+      renderFollowing();
+    }
+  }
+
   window.addEventListener('pageshow', e => {
-    if (e.persisted) renderFollowing();
+    if (e.persisted) refreshFeed();
   });
 
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') renderFollowing();
+    if (document.visibilityState === 'visible') refreshFeed();
   });
 
 })();
