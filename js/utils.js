@@ -21,7 +21,7 @@ function sharePost(post) {
 
 function parseCaption(str, clickable = false) {
   if (!str) return '';
-  const myHandle = DB.Profile.get().handle || '';
+  const myHandle = DB.Profile.getCached().handle || '';
   return escapeHTML(str).replace(
     /(#[a-zA-Z0-9_]+)|(@[a-zA-Z0-9_.]+)/g,
     (match, hash, mention) => {

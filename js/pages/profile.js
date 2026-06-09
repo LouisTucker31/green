@@ -40,8 +40,8 @@ const ProfilePage = (() => {
 
     removeBtn.addEventListener('click', () => {
       avatarSheetCtrl.close();
-      DB.Profile.save({ avatar: null });
-      renderAvatar(DB.Profile.get());
+      await DB.Profile.save({ avatar: null });
+      renderAvatar(DB.Profile.getCached());
     });
 
     input.addEventListener('change', () => {
@@ -177,7 +177,7 @@ const ProfilePage = (() => {
     _cropImg = null;
   }
 
-  function commitCrop() {
+  async function commitCrop() {
     const frameL  = (_stageW - CROP_SIZE) / 2;
     const frameT  = (_stageH - CROP_SIZE) / 2;
     const output  = document.createElement('canvas');
@@ -188,15 +188,40 @@ const ProfilePage = (() => {
     ctx.arc(100, 100, 100, 0, Math.PI * 2);
     ctx.clip();
     ctx.drawImage(_cropCanvas, frameL, frameT, CROP_SIZE, CROP_SIZE, 0, 0, 200, 200);
-    DB.Profile.save({ avatar: output.toDataURL('image/jpeg', 0.85) });
-    renderAvatar(DB.Profile.get());
+
+    // Use base64 as the immediate local fallback
+    const base64 = output.toDataURL('image/jpeg', 0.85);
+    await DB.Profile.save({ avatar: base64 });
+    renderAvatar(DB.Profile.getCached());
     closeCrop();
+
+    // Upload to Supabase Storage in the background and update with the public URL
+    try {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session) {
+        const blob = await new Promise(resolve => output.toBlob(resolve, 'image/jpeg', 0.85));
+        const path = `${session.user.id}/avatar.jpg`;
+        const { error: uploadError } = await supabaseClient.storage
+          .from('avatars')
+          .upload(path, blob, { contentType: 'image/jpeg', upsert: true });
+
+        if (!uploadError) {
+          const { data: { publicUrl } } = supabaseClient.storage
+            .from('avatars')
+            .getPublicUrl(path);
+          await DB.Profile.save({ avatar: publicUrl });
+          renderAvatar(DB.Profile.getCached());
+        }
+      }
+    } catch (e) {
+      console.warn('Avatar upload failed, keeping local copy', e);
+    }
   }
 
   // ─── RENDER ──────────────────────────────────────────────────────────────
 
   async function render() {
-    const profile       = DB.Profile.get();
+    const profile       = await DB.Profile.get();
     const playedIds     = DB.Played.getAll();
     const rounds        = DB.Rounds.getAll();
     const posts         = DB.Posts.getAll();
@@ -372,8 +397,8 @@ const ProfilePage = (() => {
 
   const editSheetCtrl = new Sheet('edit-modal', 'edit-modal-overlay');
 
-  function openModal() {
-    const profile = DB.Profile.get();
+  async function openModal() {
+    const profile = await DB.Profile.get();
     document.getElementById('input-name').value        = profile.name       || '';
     document.getElementById('input-handle').value      = profile.handle ? profile.handle.replace('@', '') : '';
     document.getElementById('input-home-course').value = profile.homeCourse || '';
@@ -389,7 +414,7 @@ const ProfilePage = (() => {
     setTimeout(() => document.getElementById('home-course-results').classList.add('hidden'), 350);
   }
 
-  function saveModal() {
+  async function saveModal() {
     const rawHandle = document.getElementById('input-handle').value.trim();
     const handle    = sanitiseHandle(rawHandle);
     const error     = validateHandle(handle);
@@ -404,7 +429,7 @@ const ProfilePage = (() => {
       ? rawHandicap
       : null;
 
-    DB.Profile.save({
+    await DB.Profile.save({
       name:       rawName,
       handle:     '@' + handle,
       homeCourse,

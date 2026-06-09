@@ -220,19 +220,76 @@ const DB = (() => {
 
   const Profile = {
 
-    get() {
-      return read(KEYS.PROFILE) || {
-        name:       '',
-        handle:     '',
-        homeCourse: null,
-        handicap:   null,
-        avatar:     null,
-      };
+    _defaults() {
+      return { name: '', handle: '', homeCourse: null, handicap: null, avatar: null };
     },
 
-    save(changes) {
-      const current = Profile.get();
-      write(KEYS.PROFILE, { ...current, ...changes });
+    // Sync read from localStorage cache — safe to call anywhere without await.
+    // Always up-to-date because get() and save() both keep the cache warm.
+    getCached() {
+      return read(KEYS.PROFILE) || Profile._defaults();
+    },
+
+    async get() {
+      const cached = Profile.getCached();
+
+      let session = null;
+      try { ({ data: { session } } = await supabaseClient.auth.getSession()); } catch (_) {}
+      if (!session) return cached;
+
+      try {
+        const { data, error } = await supabaseClient
+          .from('profiles')
+          .select('handle, display_name, avatar_url, bio')
+          .eq('id', session.user.id)
+          .single();
+
+        if (error && error.code === 'PGRST116') {
+          // Row missing — insert default and return cached
+          await supabaseClient.from('profiles').insert({
+            id:           session.user.id,
+            handle:       cached.handle || '',
+            display_name: cached.name   || '',
+          });
+          return cached;
+        }
+
+        if (error) throw error;
+
+        const merged = {
+          ...cached,
+          name:   data.display_name || cached.name,
+          handle: data.handle       || cached.handle,
+          avatar: data.avatar_url   || cached.avatar,
+        };
+        write(KEYS.PROFILE, merged);
+        return merged;
+
+      } catch (e) {
+        console.warn('DB.Profile.get fell back to cache', e);
+        return cached;
+      }
+    },
+
+    async save(changes) {
+      const current = Profile.getCached();
+      const next    = { ...current, ...changes };
+      write(KEYS.PROFILE, next);
+
+      let session = null;
+      try { ({ data: { session } } = await supabaseClient.auth.getSession()); } catch (_) {}
+      if (!session) return;
+
+      try {
+        await supabaseClient.from('profiles').upsert({
+          id:           session.user.id,
+          handle:       next.handle ? next.handle.replace('@', '') : '',
+          display_name: next.name   || '',
+          avatar_url:   next.avatar || null,
+        }, { onConflict: 'id' });
+      } catch (e) {
+        console.warn('DB.Profile.save remote upsert failed', e);
+      }
     },
 
   };
@@ -495,7 +552,7 @@ const DB = (() => {
     console.log('Rounds:',     Rounds.getAll());
     console.log('Wishlist:',   Wishlist.getAll());
     console.log('Favourites:', Favourites.getAll());
-    console.log('Profile:',    Profile.get());
+    console.log('Profile:',    Profile.getCached());
     console.log('Settings:',   Settings.get());
     console.log('Comments:',   Comments.getAll());
     console.log('Stats:',      {

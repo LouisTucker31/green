@@ -59,7 +59,7 @@ const FeedPage = (() => {
 
   function renderFollowing() {
     const allPosts  = DB.Posts.getAllSorted();
-    const profile   = DB.Profile.get();
+    const profile   = DB.Profile.getCached();
     const list      = document.getElementById('feed-list');
     const empty     = document.getElementById('feed-empty');
 
@@ -82,7 +82,7 @@ const FeedPage = (() => {
 
   function renderDiscover() {
     const allPosts    = DB.Posts.getAllSorted();
-    const profile     = DB.Profile.get();
+    const profile     = DB.Profile.getCached();
     const list        = document.getElementById('discover-list');
     const empty       = document.getElementById('discover-empty');
     const postsEmpty  = document.getElementById('discover-posts-empty');
@@ -127,7 +127,7 @@ const FeedPage = (() => {
 
   function renderPeopleSearch(query) {
     const q        = query.toLowerCase();
-    const profile  = DB.Profile.get();
+    const profile  = DB.Profile.getCached();
     const people   = document.getElementById('discover-people');
     const discList = document.getElementById('discover-list');
     const empty    = document.getElementById('discover-empty');
@@ -347,7 +347,7 @@ const FeedPage = (() => {
     selectedRound = round;
     pendingPhotos = [];
 
-    const profile  = DB.Profile.get();
+    const profile  = DB.Profile.getCached();
     const screen   = document.getElementById('compose-screen');
     const infoEl   = document.getElementById('compose-round-info');
     const avatarEl = document.getElementById('compose-avatar');

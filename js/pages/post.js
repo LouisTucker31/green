@@ -47,7 +47,7 @@ const PostPage = (() => {
   // ─── RENDER ──────────────────────────────────────────────────────────────
 
   function renderUser() {
-    const profile    = DB.Profile.get();
+    const profile    = DB.Profile.getCached();
     const name       = profile.name   || 'You';
     const handle     = profile.handle || '';
     const date       = formatDate(post.date);
@@ -199,7 +199,7 @@ const PostPage = (() => {
   }
 
   function commentHTML(c) {
-    const profile = DB.Profile.get();
+    const profile = DB.Profile.getCached();
     return `
       <div class="post-comment-item" data-comment-id="${c.id}">
         <div class="post-comment-item-avatar">${avatarHTML(profile, 14)}</div>
@@ -316,7 +316,7 @@ const PostPage = (() => {
     const existing = document.getElementById('post-compose-screen');
     if (existing) existing.remove();
 
-    const profile  = DB.Profile.get();
+    const profile  = DB.Profile.getCached();
     const avatarIn = profile.avatar
       ? `<img src="${profile.avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`
       : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green-700)" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
