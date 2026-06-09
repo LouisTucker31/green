@@ -47,11 +47,6 @@
         </div>
 
         <div class="auth-field">
-          <label class="auth-label" for="input-handicap">Handicap <span style="font-weight:400;color:var(--grey-400)">(optional)</span></label>
-          <input class="auth-input" id="input-handicap" type="number" placeholder="e.g. 8.3" min="0" max="54" step="0.1" />
-        </div>
-
-        <div class="auth-field">
           <label class="auth-label" for="input-email">Email</label>
           <input class="auth-input" id="input-email" type="email" placeholder="james@example.com" maxlength="254" autocomplete="email" autocorrect="off" autocapitalize="none" />
           <span class="auth-error" id="email-error"></span>
@@ -104,7 +99,6 @@
 
       const nameEl     = document.getElementById('input-name');
       const handleEl  = document.getElementById('input-handle');
-      const handicapEl = document.getElementById('input-handicap');
       const emailEl   = document.getElementById('input-email');
       const passwordEl = document.getElementById('input-password');
       const handleErr = document.getElementById('handle-error');
@@ -125,9 +119,6 @@
         const handle   = sanitiseHandle(handleEl.value);
         const email    = emailEl.value.trim();
         const password = passwordEl.value;
-        const rawHcp   = parseFloat(handicapEl.value);
-        const handicap = !isNaN(rawHcp) && rawHcp >= 0 && rawHcp <= 54 ? rawHcp : null;
-
         // Validate
         const handleError = validateHandle(handle);
         if (handleError) { handleErr.textContent = handleError; return; }
