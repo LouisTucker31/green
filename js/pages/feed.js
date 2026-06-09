@@ -671,8 +671,9 @@ const FeedPage = (() => {
     initPullToRefresh(() => { activeTab === 'following' ? renderFollowing() : renderDiscover(); });
   }
 
-  function refreshFeed() {
+  async function refreshFeed() {
     DB.Posts._cache = null;
+    await DB.Likes.loadCache(true);
     if (activeTab === 'discover') {
       renderDiscover();
     } else {
