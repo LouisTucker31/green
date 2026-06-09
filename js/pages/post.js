@@ -160,6 +160,7 @@ const PostPage = (() => {
   function renderLike() {
     const btn   = document.getElementById('post-like-btn');
     const liked = DB.Likes.has(postId);
+    console.log('[renderLike] postId:', postId, 'liked:', liked, 'cache:', DB.Likes._cache);
     const label = document.getElementById('post-like-label');
     btn.classList.toggle('liked', liked);
     const svg = btn.querySelector('svg');
@@ -170,6 +171,7 @@ const PostPage = (() => {
 
   function renderLikesCount() {
     const count = post ? (post.likeCount || 0) : 0;
+    console.log('[renderLikesCount] postId:', postId, 'likeCount:', post?.likeCount);
     const el    = document.getElementById('post-likes-count');
     if (count > 0) {
       el.textContent = `${count} ${count === 1 ? 'person' : 'people'} liked this`;
