@@ -503,6 +503,31 @@ const DB = (() => {
     },
 
     async getById(postId) {
+      // Always fetch fresh from Supabase so like/comment counts are current.
+      // Falls back to cache if not signed in or on error.
+      let session = null;
+      try { ({ data: { session } } = await supabaseClient.auth.getSession()); } catch (_) {}
+
+      if (session) {
+        try {
+          const { data, error } = await supabaseClient
+            .from('posts')
+            .select('*, likes(count), comments(count)')
+            .eq('id', postId)
+            .single();
+
+          if (!error && data) {
+            const post = Posts._fromRow(data);
+            // Update in-memory cache entry if present
+            if (Posts._cache) {
+              const idx = Posts._cache.findIndex(p => p.id === postId);
+              if (idx !== -1) Posts._cache[idx] = post;
+            }
+            return post;
+          }
+        } catch (_) {}
+      }
+
       const all = await Posts.getAll();
       return all.find(p => p.id === postId) || null;
     },
