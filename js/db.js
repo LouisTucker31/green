@@ -395,16 +395,20 @@ const DB = (() => {
       } else {
         try { photos = JSON.parse(row.photos || '[]'); } catch (_) {}
       }
+      const likeCount    = Array.isArray(row.likes)    ? (row.likes[0]?.count    ?? 0) : 0;
+      const commentCount = Array.isArray(row.comments) ? (row.comments[0]?.count ?? 0) : 0;
       return {
-        id:         row.id,
-        roundId:    row.round_id   || null,
-        courseId:   row.course_id  || '',
-        courseName: row.course_name || '',
-        date:       row.date       || '',
-        caption:    row.caption    || '',
-        score:      row.score      ?? null,
+        id:           row.id,
+        roundId:      row.round_id   || null,
+        courseId:     row.course_id  || '',
+        courseName:   row.course_name || '',
+        date:         row.date       || '',
+        caption:      row.caption    || '',
+        score:        row.score      ?? null,
         photos,
-        createdAt:  new Date(row.created_at).getTime(),
+        likeCount,
+        commentCount,
+        createdAt:    new Date(row.created_at).getTime(),
       };
     },
 
@@ -440,7 +444,7 @@ const DB = (() => {
       try {
         const { data, error } = await supabaseClient
           .from('posts')
-          .select('*')
+          .select('*, likes(count), comments(count)')
           .eq('user_id', session.user.id)
           .order('created_at', { ascending: false });
 
@@ -468,7 +472,7 @@ const DB = (() => {
       try {
         const { data: rows, error } = await supabaseClient
           .from('posts')
-          .select('*')
+          .select('*, likes(count), comments(count)')
           .order('created_at', { ascending: false });
 
         if (error) throw error;
@@ -595,33 +599,73 @@ const DB = (() => {
   };
 
   // ─── LIKES ───────────────────────────────────────────────────────────────
-  // Stored as array of round IDs the user has liked
 
   const Likes = {
 
-    getAll() {
-      return read(KEYS.LIKES) || [];
-    },
+    _cache: null, // Set of liked post IDs for the current user
 
-    has(roundId) {
-      return Likes.getAll().includes(roundId);
-    },
+    // Fetch all liked post IDs for the current user upfront.
+    // Call once on page load; has() stays sync thereafter.
+    async loadCache() {
+      if (Likes._cache) return;
 
-    add(roundId) {
-      const list = Likes.getAll();
-      if (!list.includes(roundId)) {
-        list.push(roundId);
-        write(KEYS.LIKES, list);
+      let session = null;
+      try { ({ data: { session } } = await supabaseClient.auth.getSession()); } catch (_) {}
+
+      if (!session) { Likes._cache = new Set(); return; }
+
+      try {
+        const { data, error } = await supabaseClient
+          .from('likes')
+          .select('post_id')
+          .eq('user_id', session.user.id);
+
+        if (error) throw error;
+        Likes._cache = new Set((data || []).map(r => r.post_id));
+      } catch (e) {
+        console.warn('DB.Likes.loadCache failed', e);
+        Likes._cache = new Set();
       }
     },
 
-    remove(roundId) {
-      write(KEYS.LIKES, Likes.getAll().filter(id => id !== roundId));
+    has(postId) {
+      return Likes._cache ? Likes._cache.has(postId) : false;
     },
 
-    toggle(roundId) {
-      Likes.has(roundId) ? Likes.remove(roundId) : Likes.add(roundId);
-      return Likes.has(roundId);
+    async toggle(postId) {
+      const wasLiked = Likes.has(postId);
+
+      // Optimistic update
+      if (wasLiked) { Likes._cache.delete(postId); } else { Likes._cache.add(postId); }
+      const isNowLiked = !wasLiked;
+
+      let session = null;
+      try { ({ data: { session } } = await supabaseClient.auth.getSession()); } catch (_) {}
+
+      if (!session) return isNowLiked;
+
+      try {
+        if (wasLiked) {
+          const { error } = await supabaseClient
+            .from('likes')
+            .delete()
+            .eq('post_id', postId)
+            .eq('user_id', session.user.id);
+          if (error) throw error;
+        } else {
+          const { error } = await supabaseClient
+            .from('likes')
+            .insert({ post_id: postId, user_id: session.user.id });
+          if (error) throw error;
+        }
+      } catch (e) {
+        // Roll back optimistic update
+        console.warn('DB.Likes.toggle failed, rolling back', e);
+        if (wasLiked) { Likes._cache.add(postId); } else { Likes._cache.delete(postId); }
+        return wasLiked;
+      }
+
+      return isNowLiked;
     },
 
   };
@@ -630,33 +674,84 @@ const DB = (() => {
 
   const Comments = {
 
-    getAll() {
-      return read(KEYS.COMMENTS) || [];
+    _cache: {}, // { [postId]: comment[] }
+
+    // Fetch all comments for a post and cache them.
+    async loadForPost(postId) {
+      try {
+        const { data, error } = await supabaseClient
+          .from('comments')
+          .select('id, post_id, user_id, handle, text, created_at')
+          .eq('post_id', postId)
+          .order('created_at', { ascending: true });
+
+        if (error) throw error;
+        Comments._cache[postId] = (data || []).map(Comments._fromRow);
+      } catch (e) {
+        console.warn('DB.Comments.loadForPost failed', e);
+        if (!Comments._cache[postId]) Comments._cache[postId] = [];
+      }
+    },
+
+    _fromRow(row) {
+      return {
+        id:        row.id,
+        postId:    row.post_id,
+        userId:    row.user_id,
+        handle:    row.handle || '',
+        text:      row.text   || '',
+        createdAt: new Date(row.created_at).getTime(),
+      };
     },
 
     getForPost(postId) {
-      return Comments.getAll().filter(c => c.postId === postId);
-    },
-
-    add({ postId, text }) {
-      const all     = Comments.getAll();
-      const comment = {
-        id:        `comment_${Date.now()}`,
-        postId,
-        text,
-        createdAt: Date.now(),
-      };
-      all.push(comment);
-      write(KEYS.COMMENTS, all);
-      return comment;
-    },
-
-    remove(commentId) {
-      write(KEYS.COMMENTS, Comments.getAll().filter(c => c.id !== commentId));
+      return Comments._cache[postId] || [];
     },
 
     countForPost(postId) {
       return Comments.getForPost(postId).length;
+    },
+
+    async add({ postId, text }) {
+      let session = null;
+      try { ({ data: { session } } = await supabaseClient.auth.getSession()); } catch (_) {}
+
+      if (!session) throw new Error('You must be signed in to comment.');
+
+      const profile = DB.Profile.getCached();
+      const handle  = profile.handle || '';
+
+      const { data, error } = await supabaseClient
+        .from('comments')
+        .insert({ post_id: postId, user_id: session.user.id, handle, text })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      const comment = Comments._fromRow(data);
+      if (!Comments._cache[postId]) Comments._cache[postId] = [];
+      Comments._cache[postId].push(comment);
+      return comment;
+    },
+
+    async remove(commentId, postId) {
+      let session = null;
+      try { ({ data: { session } } = await supabaseClient.auth.getSession()); } catch (_) {}
+
+      if (!session) return;
+
+      const { error } = await supabaseClient
+        .from('comments')
+        .delete()
+        .eq('id', commentId)
+        .eq('user_id', session.user.id);
+
+      if (error) throw error;
+
+      if (Comments._cache[postId]) {
+        Comments._cache[postId] = Comments._cache[postId].filter(c => c.id !== commentId);
+      }
     },
 
   };

@@ -19,8 +19,12 @@ const PostPage = (() => {
       return;
     }
 
+    await DB.Likes.loadCache();
+
     round  = DB.Rounds.getAll().find(r => r.id === post.roundId) || null;
     course = COURSES_DATA.data.find(c => c.id === post.courseId) || null;
+
+    await DB.Comments.loadForPost(postId);
 
     document.getElementById('post-content').classList.remove('hidden');
     document.getElementById('post-comment-bar').classList.remove('hidden');
@@ -165,10 +169,10 @@ const PostPage = (() => {
   }
 
   function renderLikesCount() {
-    const count = DB.Likes.has(postId) ? 1 : 0;
+    const count = post ? (post.likeCount || 0) : 0;
     const el    = document.getElementById('post-likes-count');
     if (count > 0) {
-      el.textContent = `${count} person liked this`;
+      el.textContent = `${count} ${count === 1 ? 'person' : 'people'} liked this`;
       el.classList.remove('hidden');
     } else {
       el.classList.add('hidden');
@@ -199,19 +203,29 @@ const PostPage = (() => {
   }
 
   function commentHTML(c) {
-    const profile = DB.Profile.getCached();
+    const profile    = DB.Profile.getCached();
+    const isOwn      = c.handle === profile.handle;
+    const displayName = c.handle ? `@${escapeHTML(c.handle)}` : 'Unknown';
+    const deleteBtn  = isOwn
+      ? `<button class="post-comment-delete" data-comment-id="${c.id}" aria-label="Delete comment">
+           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+             <polyline points="3 6 5 6 21 6"/>
+             <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+           </svg>
+         </button>`
+      : '';
     return `
       <div class="post-comment-item" data-comment-id="${c.id}">
-        <div class="post-comment-item-avatar">${avatarHTML(profile, 14)}</div>
+        <div class="post-comment-item-avatar">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green-700)" stroke-width="1.5">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
         <div class="post-comment-item-body">
           <div class="post-comment-item-header">
-            <span class="post-comment-item-name">${escapeHTML(profile.name || 'You')}</span>
-            <button class="post-comment-delete" data-comment-id="${c.id}" aria-label="Delete comment">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="3 6 5 6 21 6"/>
-                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-              </svg>
-            </button>
+            <span class="post-comment-item-name">${displayName}</span>
+            ${deleteBtn}
           </div>
           <span class="post-comment-item-text">${escapeHTML(c.text)}</span>
           <span class="post-comment-item-time">${formatDateTime(c.createdAt)}</span>
@@ -465,10 +479,22 @@ const PostPage = (() => {
       }
     }
 
-    document.getElementById('post-like-btn').addEventListener('click', () => {
-      DB.Likes.toggle(postId);
+    document.getElementById('post-like-btn').addEventListener('click', async () => {
+      const wasLiked  = DB.Likes.has(postId);
+      const prevCount = post.likeCount || 0;
+
+      // Optimistic update
+      post.likeCount = wasLiked ? Math.max(0, prevCount - 1) : prevCount + 1;
       renderLike();
       renderLikesCount();
+
+      const confirmedLiked = await DB.Likes.toggle(postId);
+      if (confirmedLiked === wasLiked) {
+        // Roll back
+        post.likeCount = prevCount;
+        renderLike();
+        renderLikesCount();
+      }
     });
 
     document.getElementById('post-comment-action-btn').addEventListener('click', () => {
@@ -489,29 +515,40 @@ const PostPage = (() => {
 
   // ─── COMMENTS ────────────────────────────────────────────────────────────
 
-  function submitComment() {
-    const input = document.getElementById('post-comment-input');
-    const text  = input.value.trim();
+  async function submitComment() {
+    const input  = document.getElementById('post-comment-input');
+    const sendBtn = document.getElementById('post-comment-send');
+    const text   = input.value.trim();
     if (!text) return;
 
-    saveComment({ text });
-
-    input.value = '';
+    input.value  = '';
     input.blur();
-    renderComments();
+    sendBtn.disabled = true;
+
+    try {
+      const comment = await DB.Comments.add({ postId, text });
+      renderComments();
+      post.commentCount = (post.commentCount || 0) + 1;
+    } catch (e) {
+      alert('Failed to post comment. Please try again.');
+      input.value = text;
+    } finally {
+      sendBtn.disabled = false;
+    }
   }
 
   function getComments() {
     return DB.Comments.getForPost(postId);
   }
 
-  function saveComment({ text }) {
-    DB.Comments.add({ postId, text });
-  }
-
-  function deleteComment(commentId) {
-    DB.Comments.remove(commentId);
-    renderComments();
+  async function deleteComment(commentId) {
+    try {
+      await DB.Comments.remove(commentId, postId);
+      post.commentCount = Math.max(0, (post.commentCount || 1) - 1);
+      renderComments();
+    } catch (e) {
+      alert('Failed to delete comment. Please try again.');
+    }
   }
 
   // ─── HELPERS ─────────────────────────────────────────────────────────────

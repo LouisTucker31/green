@@ -9,12 +9,14 @@ const FeedPage = (() => {
   let activeTab      = 'following';
   let searchActive   = false;
 
-  function init() {
+  async function init() {
     bindTabs();
     bindNewPost();
     bindEmptyLinks();
     bindDiscover();
     renderLocalModeBanner('panel-following');
+
+    await DB.Likes.loadCache();
 
     // Handle incoming hashtag from post page caption tap
     const params = new URLSearchParams(window.location.search);
@@ -231,8 +233,8 @@ const FeedPage = (() => {
       ? `<div class="feed-card-photo"><img src="${post.photos[0]}" alt="Post photo" /></div>`
       : '';
     const liked    = DB.Likes.has(post.id);
-    const likes    = likeCount(post.id);
-    const comments = getCommentCount(post.id);
+    const likes    = likeCount(post);
+    const comments = getCommentCount(post);
 
     return `
       <div class="feed-card" data-post-id="${post.id}" data-href="post.html?id=${post.id}">
@@ -564,25 +566,50 @@ const FeedPage = (() => {
     });
 
     container.querySelectorAll('.feed-like-btn').forEach(btn => {
-      btn.addEventListener('click', e => {
+      btn.addEventListener('click', async e => {
         e.preventDefault();
         e.stopPropagation();
-        const postId = btn.dataset.postId;
-        const liked  = DB.Likes.toggle(postId);
-        btn.classList.toggle('liked', liked);
+        const postId  = btn.dataset.postId;
+        const wasLiked = btn.classList.contains('liked');
+
+        // Optimistic UI — flip immediately
+        const nowLiked = !wasLiked;
+        btn.classList.toggle('liked', nowLiked);
         const svg = btn.querySelector('svg');
-        svg.setAttribute('fill',   liked ? 'var(--green-700)' : 'none');
-        svg.setAttribute('stroke', liked ? 'var(--green-700)' : 'currentColor');
-        let count = btn.querySelector('.feed-like-count');
-        if (liked) {
-          if (!count) {
-            count = document.createElement('span');
-            count.className = 'feed-like-count';
-            btn.appendChild(count);
+        svg.setAttribute('fill',   nowLiked ? 'var(--green-700)' : 'none');
+        svg.setAttribute('stroke', nowLiked ? 'var(--green-700)' : 'currentColor');
+        let countEl = btn.querySelector('.feed-like-count');
+        const prevCount = countEl ? parseInt(countEl.textContent, 10) || 0 : 0;
+        const newCount  = nowLiked ? prevCount + 1 : Math.max(0, prevCount - 1);
+        if (newCount > 0) {
+          if (!countEl) {
+            countEl = document.createElement('span');
+            countEl.className = 'feed-like-count';
+            btn.appendChild(countEl);
           }
-          count.textContent = '1';
+          countEl.textContent = newCount;
         } else {
-          if (count) count.remove();
+          if (countEl) countEl.remove();
+        }
+
+        // Async toggle — rolls back internally on error
+        const confirmedLiked = await DB.Likes.toggle(postId);
+        if (confirmedLiked !== nowLiked) {
+          // Server disagreed — revert the UI
+          btn.classList.toggle('liked', confirmedLiked);
+          svg.setAttribute('fill',   confirmedLiked ? 'var(--green-700)' : 'none');
+          svg.setAttribute('stroke', confirmedLiked ? 'var(--green-700)' : 'currentColor');
+          let revertEl = btn.querySelector('.feed-like-count');
+          if (prevCount > 0) {
+            if (!revertEl) {
+              revertEl = document.createElement('span');
+              revertEl.className = 'feed-like-count';
+              btn.appendChild(revertEl);
+            }
+            revertEl.textContent = prevCount;
+          } else {
+            if (revertEl) revertEl.remove();
+          }
         }
       });
     });
@@ -605,12 +632,12 @@ const FeedPage = (() => {
     return (lastSpace > 0 ? trimmed.slice(0, lastSpace) : trimmed) + '…';
   }
 
-  function likeCount(postId) {
-    return DB.Likes.has(postId) ? 1 : 0;
+  function likeCount(post) {
+    return post.likeCount || 0;
   }
 
-  function getCommentCount(postId) {
-    return DB.Comments.countForPost(postId);
+  function getCommentCount(post) {
+    return post.commentCount || 0;
   }
 
   function avatarHTML(profile) {
