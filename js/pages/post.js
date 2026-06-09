@@ -490,8 +490,9 @@ const PostPage = (() => {
       renderLike();
       renderLikesCount();
 
-      const confirmedLiked = await DB.Likes.toggle(postId);
-      if (confirmedLiked === wasLiked) {
+      try {
+        await DB.Likes.toggle(postId);
+      } catch (_) {
         // Roll back
         post.likeCount = prevCount;
         renderLike();

@@ -592,13 +592,13 @@ const FeedPage = (() => {
           if (countEl) countEl.remove();
         }
 
-        // Async toggle — rolls back internally on error
-        const confirmedLiked = await DB.Likes.toggle(postId);
-        if (confirmedLiked !== nowLiked) {
-          // Server disagreed — revert the UI
-          btn.classList.toggle('liked', confirmedLiked);
-          svg.setAttribute('fill',   confirmedLiked ? 'var(--green-700)' : 'none');
-          svg.setAttribute('stroke', confirmedLiked ? 'var(--green-700)' : 'currentColor');
+        // Async — revert UI on error
+        try {
+          await DB.Likes.toggle(postId);
+        } catch (_) {
+          btn.classList.toggle('liked', wasLiked);
+          svg.setAttribute('fill',   wasLiked ? 'var(--green-700)' : 'none');
+          svg.setAttribute('stroke', wasLiked ? 'var(--green-700)' : 'currentColor');
           let revertEl = btn.querySelector('.feed-like-count');
           if (prevCount > 0) {
             if (!revertEl) {

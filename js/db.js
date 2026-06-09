@@ -635,37 +635,34 @@ const DB = (() => {
     async toggle(postId) {
       const wasLiked = Likes.has(postId);
 
-      // Optimistic update
-      if (wasLiked) { Likes._cache.delete(postId); } else { Likes._cache.add(postId); }
-      const isNowLiked = !wasLiked;
-
       let session = null;
       try { ({ data: { session } } = await supabaseClient.auth.getSession()); } catch (_) {}
 
-      if (!session) return isNowLiked;
-
-      try {
-        if (wasLiked) {
+      if (wasLiked) {
+        Likes._cache.delete(postId);
+        if (session) {
           const { error } = await supabaseClient
             .from('likes')
             .delete()
             .eq('post_id', postId)
             .eq('user_id', session.user.id);
-          if (error) throw error;
-        } else {
+          if (error) {
+            Likes._cache.add(postId);
+            throw error;
+          }
+        }
+      } else {
+        Likes._cache.add(postId);
+        if (session) {
           const { error } = await supabaseClient
             .from('likes')
             .insert({ post_id: postId, user_id: session.user.id });
-          if (error) throw error;
+          if (error) {
+            Likes._cache.delete(postId);
+            throw error;
+          }
         }
-      } catch (e) {
-        // Roll back optimistic update
-        console.warn('DB.Likes.toggle failed, rolling back', e);
-        if (wasLiked) { Likes._cache.add(postId); } else { Likes._cache.delete(postId); }
-        return wasLiked;
       }
-
-      return isNowLiked;
     },
 
   };
@@ -721,6 +718,8 @@ const DB = (() => {
       const profile = DB.Profile.getCached();
       const handle  = profile.handle || '';
 
+      const clientTime = new Date().toISOString();
+
       const { data, error } = await supabaseClient
         .from('comments')
         .insert({ post_id: postId, user_id: session.user.id, handle, body: text })
@@ -729,6 +728,7 @@ const DB = (() => {
 
       if (error) throw error;
 
+      if (!data.created_at) data.created_at = clientTime;
       const comment = Comments._fromRow(data);
       if (!Comments._cache[postId]) Comments._cache[postId] = [];
       Comments._cache[postId].push(comment);
