@@ -157,10 +157,9 @@ const PostPage = (() => {
     el.classList.remove('hidden');
   }
 
-  function renderLike() {
+  function renderLike(liked) {
+    if (liked === undefined) liked = DB.Likes.has(postId);
     const btn   = document.getElementById('post-like-btn');
-    const liked = DB.Likes.has(postId);
-    console.log('[renderLike] postId:', postId, 'liked:', liked, 'cache:', DB.Likes._cache);
     const label = document.getElementById('post-like-label');
     btn.classList.toggle('liked', liked);
     const svg = btn.querySelector('svg');
@@ -171,7 +170,6 @@ const PostPage = (() => {
 
   function renderLikesCount() {
     const count = post ? (post.likeCount || 0) : 0;
-    console.log('[renderLikesCount] postId:', postId, 'likeCount:', post?.likeCount);
     const el    = document.getElementById('post-likes-count');
     if (count > 0) {
       el.textContent = `${count} ${count === 1 ? 'person' : 'people'} liked this`;
@@ -485,11 +483,12 @@ const PostPage = (() => {
 
     document.getElementById('post-like-btn').addEventListener('click', async () => {
       const wasLiked  = DB.Likes.has(postId);
+      const nowLiked  = !wasLiked;
       const prevCount = post.likeCount || 0;
 
       // Optimistic update
-      post.likeCount = wasLiked ? Math.max(0, prevCount - 1) : prevCount + 1;
-      renderLike();
+      post.likeCount = nowLiked ? prevCount + 1 : Math.max(0, prevCount - 1);
+      renderLike(nowLiked);
       renderLikesCount();
 
       try {
@@ -497,7 +496,7 @@ const PostPage = (() => {
       } catch (_) {
         // Roll back
         post.likeCount = prevCount;
-        renderLike();
+        renderLike(wasLiked);
         renderLikesCount();
       }
     });
