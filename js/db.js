@@ -700,7 +700,7 @@ const DB = (() => {
         userId:    row.user_id,
         handle:    row.handle || '',
         text:      row.body   || '',
-        createdAt: new Date(row.created_at).getTime(),
+        createdAt: row.created_at ? new Date(row.created_at).getTime() : Date.now(),
       };
     },
 
@@ -724,7 +724,7 @@ const DB = (() => {
       const { data, error } = await supabaseClient
         .from('comments')
         .insert({ post_id: postId, user_id: session.user.id, handle, body: text })
-        .select()
+        .select('id, post_id, user_id, handle, body, created_at')
         .single();
 
       if (error) throw error;

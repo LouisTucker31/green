@@ -205,7 +205,9 @@ const PostPage = (() => {
   function commentHTML(c) {
     const profile    = DB.Profile.getCached();
     const isOwn      = c.handle === profile.handle;
-    const displayName = c.handle ? `@${escapeHTML(c.handle)}` : 'Unknown';
+    const displayName = c.handle
+      ? `<a href="player.html?handle=${encodeURIComponent(c.handle)}" class="post-comment-handle">@${escapeHTML(c.handle)}</a>`
+      : '<span>Unknown</span>';
     const deleteBtn  = isOwn
       ? `<button class="post-comment-delete" data-comment-id="${c.id}" aria-label="Delete comment">
            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

@@ -350,6 +350,13 @@
   color: var(--grey-900);
 }
 
+.post-comment-handle {
+  color: var(--green-700);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 12px;
+}
+
 .post-comment-delete {
   background: none;
   border: none;
