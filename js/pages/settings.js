@@ -47,12 +47,12 @@ const SettingsPage = (() => {
     // ─── SIGN OUT ────────────────────────────────────────────
     const signOutRow = document.getElementById('sign-out-row');
     const signOutDivider = document.getElementById('sign-out-divider');
-    window.supabase.auth.getSession().then(({ data: { session } }) => {
+    supabaseClient.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         document.getElementById('sign-out-btn').textContent = 'Log out';
         document.getElementById('sign-out-btn').addEventListener('click', async () => {
           if (confirm('Log out of your account?')) {
-            await window.supabase.auth.signOut();
+            await supabaseClient.auth.signOut();
             window.location.href = 'login.html';
           }
         });

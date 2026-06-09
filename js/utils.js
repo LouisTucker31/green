@@ -88,7 +88,7 @@ function renderLocalModeBanner(containerId) {
   if (sessionStorage.getItem('green_banner_dismissed')) return;
   if (document.querySelector('.local-mode-banner')) return;
 
-  window.supabase.auth.getSession().then(({ data: { session } }) => {
+  supabaseClient.auth.getSession().then(({ data: { session } }) => {
     if (session) return;
 
     const container = document.getElementById(containerId);

@@ -91,7 +91,7 @@
         loginBtn.disabled = true;
         loginBtn.textContent = 'Logging in…';
 
-        const { error } = await window.supabase.auth.signInWithPassword({ email, password });
+        const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
         if (error) {
           loginErr.textContent = error.message;
