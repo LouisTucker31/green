@@ -195,7 +195,7 @@ const ProfilePage = (() => {
 
   // ─── RENDER ──────────────────────────────────────────────────────────────
 
-  function render() {
+  async function render() {
     const profile       = DB.Profile.get();
     const playedIds     = DB.Played.getAll();
     const rounds        = DB.Rounds.getAll();
@@ -209,7 +209,8 @@ const ProfilePage = (() => {
     const name = profile.name || 'Your Name';
     document.getElementById('profile-name').textContent = name;
 
-    const isLoggedIn = DB.Auth.isLoggedIn();
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    const isLoggedIn = !!session;
     const handleEl   = document.getElementById('profile-handle');
     const editBtn    = document.getElementById('edit-profile-btn');
 
