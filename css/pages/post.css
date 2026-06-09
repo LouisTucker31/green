@@ -448,8 +448,8 @@
 
 .gallery-close {
   position: absolute;
-  top: 52px;
-  right: 20px;
+  top: 16px;
+  right: 16px;
   width: 36px;
   height: 36px;
   border-radius: 50%;

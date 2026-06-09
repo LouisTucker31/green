@@ -41,7 +41,6 @@ const PlayerPage = (() => {
     const displayHandle = '@' + data.handle;
 
     document.title = `Green – ${displayHandle}`;
-    document.getElementById('player-header-name').textContent = data.display_name || displayHandle;
     document.getElementById('player-name').textContent        = data.display_name || '—';
     document.getElementById('player-handle').textContent      = displayHandle;
 
@@ -51,7 +50,7 @@ const PlayerPage = (() => {
 
     const avatarEl = document.getElementById('player-avatar');
     if (data.avatar_url) {
-      avatarEl.innerHTML = `<img src="${data.avatar_url}" alt="${data.display_name}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
+      avatarEl.innerHTML = `<img src="${data.avatar_url}" alt="${data.display_name || ''}" />`;
     }
 
     // Stats not available yet — leave as 0
@@ -65,7 +64,6 @@ const PlayerPage = (() => {
 
   function renderNotFound(handle) {
     document.title = `Green – Not found`;
-    document.getElementById('player-header-name').textContent   = handle;
     document.getElementById('player-name').textContent          = 'User not found';
     document.getElementById('player-handle').textContent        = '@' + handle;
     document.getElementById('player-bio').style.display         = 'none';

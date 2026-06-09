@@ -102,6 +102,33 @@
   margin-top: 4px;
 }
 
+.player-avatar {
+  width: 88px;
+  height: 88px;
+}
+
+.player-avatar-placeholder {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: var(--green-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid var(--white);
+  box-shadow: var(--shadow-md);
+}
+
+.player-avatar img {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--white);
+  box-shadow: var(--shadow-md);
+  display: block;
+}
+
 /* STAT TILES */
 .profile-stats {
   display: grid;
