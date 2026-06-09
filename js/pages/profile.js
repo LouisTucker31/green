@@ -219,7 +219,7 @@ const ProfilePage = (() => {
       editBtn.textContent = 'Edit Profile';
       editBtn.onclick = null;
     } else {
-      handleEl.innerHTML = `<a href="create-account.html" style="color:var(--green-700);font-size:13px;text-decoration:none;font-weight:500;">Sign in to sync your data →</a>`;
+      handleEl.innerHTML = `<a href="create-account.html" style="color:var(--green-700);font-size:13px;text-decoration:none;font-weight:500;">Sign in</a>`;
       handleEl.style.display = '';
       editBtn.textContent = 'Edit Profile';
     }
