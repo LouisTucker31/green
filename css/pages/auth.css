@@ -1,7 +1,8 @@
 /* Green PWA | Page — auth (create account + login) */
 
 .auth-page {
-  min-height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: center;
