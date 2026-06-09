@@ -248,7 +248,7 @@ const ProfilePage = (() => {
     const editBtn    = document.getElementById('edit-profile-btn');
 
     if (isLoggedIn) {
-      handleEl.textContent = profile.handle || '';
+      handleEl.textContent = profile.handle ? '@' + profile.handle : '';
       handleEl.style.display = '';
       editBtn.style.display = '';
     } else {

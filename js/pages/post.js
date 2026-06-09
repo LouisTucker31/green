@@ -64,7 +64,7 @@ const PostPage = (() => {
     document.getElementById('post-avatar').innerHTML         = avatarHTML(profile, 20);
     document.getElementById('post-comment-avatar').innerHTML = avatarHTML(profile, 14);
     document.getElementById('post-author-name').textContent  = name;
-    document.getElementById('post-author-handle').textContent = handle;
+    document.getElementById('post-author-handle').textContent = handle ? '@' + handle : '';
     document.getElementById('post-date').textContent          = date;
 
     if (!handle) document.getElementById('post-author-handle').style.display = 'none';

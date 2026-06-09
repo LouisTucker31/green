@@ -233,7 +233,7 @@ const FeedPage = (() => {
           : `<div class="feed-avatar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green-700)" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>`)
       : avatarHTML(profile);
     const caption  = post.caption
-      ? `<p class="feed-notes">${parseCaption(truncateWords(post.caption, 60), true)}</p>`
+      ? `<p class="feed-notes">${escapeHTML(truncateWords(post.caption, 60))}</p>`
       : '';
     const photo    = post.photos && post.photos.length
       ? `<div class="feed-card-photo"><img src="${post.photos[0]}" alt="Post photo" /></div>`
@@ -555,7 +555,7 @@ const FeedPage = (() => {
 
     container.querySelectorAll('.feed-card').forEach(card => {
       card.addEventListener('click', e => {
-        if (e.target.closest('button')) return;
+        if (e.target.closest('button') || e.target.closest('a')) return;
         window.location.href = card.dataset.href;
       });
     });
