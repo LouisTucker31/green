@@ -631,8 +631,8 @@ const DB = (() => {
 
     // Fetch all liked post IDs for the current user upfront.
     // Call once on page load; has() stays sync thereafter.
-    async loadCache() {
-      if (Likes._cache) return;
+    async loadCache(force = false) {
+      if (Likes._cache && !force) return;
 
       let session = null;
       try { ({ data: { session } } = await supabaseClient.auth.getSession()); } catch (_) {}

@@ -19,7 +19,7 @@ const PostPage = (() => {
       return;
     }
 
-    await DB.Likes.loadCache();
+    await DB.Likes.loadCache(true);
 
     round  = DB.Rounds.getAll().find(r => r.id === post.roundId) || null;
     course = COURSES_DATA.data.find(c => c.id === post.courseId) || null;
