@@ -7,12 +7,12 @@ const PostPage = (() => {
   let round   = null;
   let course  = null;
 
-  function init() {
+  async function init() {
     const params = new URLSearchParams(window.location.search);
     postId = params.get('id');
     const focusComment = window.location.hash === '#comment';
 
-    post  = DB.Posts.getById(postId) || null;
+    post  = await DB.Posts.getById(postId) || null;
 
     if (!post) {
       document.getElementById('post-not-found').classList.remove('hidden');
@@ -435,7 +435,7 @@ const PostPage = (() => {
     document.getElementById('pcs-save').addEventListener('click', () => {
       const caption = document.getElementById('pcs-caption').value.trim();
       DB.Posts.update(postId, { caption, photos: editPhotos });
-      post = DB.Posts.getById(postId);
+      post = DB.Posts.getCachedById(postId);
       screen.remove();
       // Re-render affected sections
       renderPhotos();
@@ -443,10 +443,14 @@ const PostPage = (() => {
     });
   }
 
-  function deletePost() {
+  async function deletePost() {
     if (!confirm('Delete this post? Your round will still be saved.')) return;
-    DB.Posts.remove(postId);
-    window.location.href = 'feed.html';
+    try {
+      await DB.Posts.remove(postId);
+      window.location.href = 'feed.html';
+    } catch (e) {
+      alert('Failed to delete post: ' + e.message);
+    }
   }
 
   // ─── EVENTS ──────────────────────────────────────────────────────────────

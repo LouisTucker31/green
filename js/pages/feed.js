@@ -57,8 +57,8 @@ const FeedPage = (() => {
 
   // ─── FOLLOWING TAB ───────────────────────────────────────────────────────
 
-  function renderFollowing() {
-    const allPosts  = DB.Posts.getAllSorted();
+  async function renderFollowing() {
+    const allPosts  = await DB.Posts.getAllSorted();
     const profile   = DB.Profile.getCached();
     const list      = document.getElementById('feed-list');
     const empty     = document.getElementById('feed-empty');
@@ -80,14 +80,12 @@ const FeedPage = (() => {
 
   // ─── DISCOVER TAB ────────────────────────────────────────────────────────
 
-  function renderDiscover() {
-    const allPosts    = DB.Posts.getAllSorted();
-    const profile     = DB.Profile.getCached();
-    const list        = document.getElementById('discover-list');
-    const empty       = document.getElementById('discover-empty');
-    const postsEmpty  = document.getElementById('discover-posts-empty');
+  async function renderDiscover() {
+    const allPosts   = await DB.Posts.getAllDiscover();
+    const list       = document.getElementById('discover-list');
+    const empty      = document.getElementById('discover-empty');
+    const postsEmpty = document.getElementById('discover-posts-empty');
 
-    // For now show all posts (when backend exists, filter to non-followed users)
     if (!allPosts.length) {
       list.innerHTML = '';
       if (postsEmpty) postsEmpty.classList.remove('hidden');
@@ -96,7 +94,10 @@ const FeedPage = (() => {
 
     if (postsEmpty) postsEmpty.classList.add('hidden');
     empty.classList.add('hidden');
-    list.innerHTML = allPosts.map(p => cardHTML(p, profile)).join('');
+    list.innerHTML = allPosts.map(p => cardHTML(p, DB.Profile.getCached(), {
+      name:   p.authorName,
+      handle: p.authorHandle,
+    })).join('');
     bindCardEvents('discover-list');
   }
 
@@ -125,7 +126,7 @@ const FeedPage = (() => {
     });
   }
 
-  function renderPeopleSearch(query) {
+  async function renderPeopleSearch(query) {
     const q        = query.toLowerCase();
     const profile  = DB.Profile.getCached();
     const people   = document.getElementById('discover-people');
@@ -135,7 +136,7 @@ const FeedPage = (() => {
     // Hashtag search — show matching posts
     if (q.startsWith('#')) {
       const tag      = q.slice(1);
-      const allPosts = DB.Posts.getAllSorted();
+      const allPosts = await DB.Posts.getAllSorted();
       const matches  = allPosts.filter(p =>
         p.caption && p.caption.toLowerCase().includes('#' + tag)
       );
@@ -147,7 +148,7 @@ const FeedPage = (() => {
       }
       empty.classList.add('hidden');
       discList.classList.remove('hidden');
-      discList.innerHTML = matches.map(p => cardHTML(p, profile)).join('');
+      discList.innerHTML = matches.map(p => cardHTML(p, profile, p.authorName ? { name: p.authorName, handle: p.authorHandle } : null)).join('');
       bindCardEvents('discover-list');
       return;
     }
@@ -218,11 +219,11 @@ const FeedPage = (() => {
 
   // ─── CARD HTML ───────────────────────────────────────────────────────────
 
-  function cardHTML(post, profile) {
+  function cardHTML(post, profile, author = null) {
     const date     = formatDate(post.date);
-    const avatar   = avatarHTML(profile);
-    const name     = profile.name   || 'You';
-    const handle   = profile.handle || '';
+    const name     = (author && author.name)   || profile.name   || 'You';
+    const handle   = (author && author.handle) || profile.handle || '';
+    const avatar   = author ? '' : avatarHTML(profile);
     const caption  = post.caption
       ? `<p class="feed-notes">${parseCaption(truncateWords(post.caption, 60), true)}</p>`
       : '';
@@ -372,7 +373,7 @@ const FeedPage = (() => {
 
     // Build unique hashtag list from existing post captions
     const allTags = [];
-    DB.Posts.getAll().forEach(p => {
+    DB.Posts.getCached().forEach(p => {
       if (!p.caption) return;
       const matches = p.caption.match(/#[a-zA-Z0-9_]+/g) || [];
       matches.forEach(t => { if (!allTags.includes(t)) allTags.push(t); });
@@ -424,36 +425,46 @@ const FeedPage = (() => {
 
   function getTotalPostStorageBytes() {
     try {
-      const posts = DB.Posts.getAll();
+      const posts = DB.Posts.getCached();
       const raw   = JSON.stringify(posts);
       return Math.round((raw.length * 3) / 4);
     } catch { return 0; }
   }
 
-  function submitPost() {
+  async function submitPost() {
     if (!selectedRound) return;
     const caption = document.getElementById('compose-caption').value.trim();
 
     const pendingBytes  = pendingPhotos.reduce((acc, p) => acc + Math.round((p.length * 3) / 4), 0);
     const existingBytes = getTotalPostStorageBytes();
-    const STORAGE_WARN  = 4 * 1024 * 1024; // warn at 4MB total post storage
+    const STORAGE_WARN  = 4 * 1024 * 1024;
 
     if (existingBytes + pendingBytes > STORAGE_WARN) {
       const proceed = confirm('Your post storage is getting large (over 4MB). This may cause issues on some devices. Post anyway?');
       if (!proceed) return;
     }
 
-    DB.Posts.add({
-      roundId:    selectedRound.id,
-      courseId:   selectedRound.courseId,
-      courseName: selectedRound.courseName,
-      date:       selectedRound.date,
-      caption,
-      photos:     pendingPhotos.slice(),
-    });
+    const btn = document.getElementById('compose-post-btn');
+    btn.disabled = true;
+    btn.textContent = 'Posting…';
 
-    closeCompose();
-    renderFollowing();
+    try {
+      await DB.Posts.add({
+        roundId:    selectedRound.id,
+        courseId:   selectedRound.courseId,
+        courseName: selectedRound.courseName,
+        date:       selectedRound.date,
+        score:      selectedRound.score ?? null,
+        caption,
+        photos:     pendingPhotos.slice(),
+      });
+      closeCompose();
+      renderFollowing();
+    } catch (e) {
+      alert('Failed to create post: ' + e.message);
+      btn.disabled = false;
+      btn.textContent = 'Post';
+    }
   }
 
   // ─── PHOTOS ──────────────────────────────────────────────────────────────
@@ -540,7 +551,7 @@ const FeedPage = (() => {
         e.preventDefault();
         e.stopPropagation();
         const postId = btn.closest('.feed-card').dataset.postId;
-        const post   = DB.Posts.getById(postId);
+        const post   = DB.Posts.getCachedById(postId);
         if (post) sharePost(post);
       });
     });

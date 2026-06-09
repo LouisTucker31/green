@@ -232,7 +232,7 @@ const ProfilePage = (() => {
     const profile       = await DB.Profile.get();
     const playedIds     = DB.Played.getAll();
     const rounds        = DB.Rounds.getAll();
-    const posts         = DB.Posts.getAll();
+    const posts         = await DB.Posts.getAll();
     const scores        = rounds.map(r => r.score).filter(s => s !== null);
     const best          = scores.length ? Math.min(...scores) : null;
     const playedCourses = COURSES_DATA.data.filter(c => playedIds.includes(c.id));
@@ -359,7 +359,7 @@ const ProfilePage = (() => {
         document.getElementById('profile-passport-panel').classList.toggle('hidden', which !== 'passport');
 
         if (which === 'posts') {
-          const posts = DB.Posts.getAll();
+          const posts = DB.Posts.getCached();
           if (!posts.length) document.getElementById('profile-posts-empty').classList.remove('hidden');
         }
 

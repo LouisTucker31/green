@@ -386,48 +386,173 @@ const DB = (() => {
 
   const Posts = {
 
-    getAll() {
-      return read(KEYS.POSTS) || [];
-    },
+    _cache: null,
 
-    getAllSorted() {
-      return Posts.getAll().sort((a, b) => b.createdAt - a.createdAt);
-    },
-
-    getById(postId) {
-      return Posts.getAll().find(p => p.id === postId) || null;
-    },
-
-    getByRoundId(roundId) {
-      return Posts.getAll().find(p => p.roundId === roundId) || null;
-    },
-
-    add({ roundId, courseId, courseName, date, caption, photos }) {
-      const posts = Posts.getAll();
-      const post  = {
-        id:         `post_${Date.now()}`,
-        roundId,
-        courseId,
-        courseName,
-        date,
-        caption:    caption || '',
-        photos:     photos  || [],
-        createdAt:  Date.now(),
+    _fromRow(row) {
+      let photos = [];
+      try { photos = JSON.parse(row.photos || '[]'); } catch (_) {}
+      return {
+        id:         row.id,
+        roundId:    row.round_id   || null,
+        courseId:   row.course_id  || '',
+        courseName: row.course_name || '',
+        date:       row.date       || '',
+        caption:    row.caption    || '',
+        score:      row.score      ?? null,
+        photos,
+        createdAt:  new Date(row.created_at).getTime(),
       };
-      posts.push(post);
-      write(KEYS.POSTS, posts);
+    },
+
+    // Sync — returns in-memory cache. Always populated after getAll() resolves.
+    getCached() {
+      return Posts._cache || read(KEYS.POSTS) || [];
+    },
+
+    getCachedSorted() {
+      return Posts.getCached().slice().sort((a, b) => b.createdAt - a.createdAt);
+    },
+
+    getCachedById(postId) {
+      return Posts.getCached().find(p => p.id === postId) || null;
+    },
+
+    // Stays local-only — roundId is not stored in Supabase this phase
+    getByRoundId(roundId) {
+      return Posts.getCached().find(p => p.roundId === roundId) || null;
+    },
+
+    async getAll() {
+      if (Posts._cache) return Posts._cache;
+
+      let session = null;
+      try { ({ data: { session } } = await supabaseClient.auth.getSession()); } catch (_) {}
+
+      if (!session) {
+        Posts._cache = read(KEYS.POSTS) || [];
+        return Posts._cache;
+      }
+
+      try {
+        const { data, error } = await supabaseClient
+          .from('posts')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        Posts._cache = data.map(Posts._fromRow);
+        write(KEYS.POSTS, Posts._cache);
+        return Posts._cache;
+      } catch (e) {
+        console.warn('DB.Posts.getAll fell back to cache', e);
+        Posts._cache = read(KEYS.POSTS) || [];
+        return Posts._cache;
+      }
+    },
+
+    async getAllSorted() {
+      const all = await Posts.getAll();
+      return all.slice().sort((a, b) => b.createdAt - a.createdAt);
+    },
+
+    // Fetches all posts from all users for the discover tab.
+    // Does a single batch profiles lookup to attach display_name + handle.
+    async getAllDiscover() {
+      try {
+        const { data: rows, error } = await supabaseClient
+          .from('posts')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        // Collect unique user_ids and fetch their profiles in one query
+        const userIds = [...new Set(rows.map(r => r.user_id))];
+        let profileMap = {};
+        if (userIds.length) {
+          const { data: profiles } = await supabaseClient
+            .from('profiles')
+            .select('id, handle, display_name')
+            .in('id', userIds);
+          (profiles || []).forEach(p => { profileMap[p.id] = p; });
+        }
+
+        return rows.map(row => {
+          const prof = profileMap[row.user_id] || {};
+          return {
+            ...Posts._fromRow(row),
+            authorName:   prof.display_name || prof.handle || 'Unknown',
+            authorHandle: prof.handle ? '@' + prof.handle : '',
+          };
+        });
+      } catch (e) {
+        console.warn('DB.Posts.getAllDiscover fell back to cache', e);
+        return Posts.getCachedSorted();
+      }
+    },
+
+    async getById(postId) {
+      const all = await Posts.getAll();
+      return all.find(p => p.id === postId) || null;
+    },
+
+    async add({ roundId, courseId, courseName, date, caption, photos, score }) {
+      let session = null;
+      try { ({ data: { session } } = await supabaseClient.auth.getSession()); } catch (_) {}
+
+      if (!session) throw new Error('You must be signed in to create a post.');
+
+      const { data, error } = await supabaseClient
+        .from('posts')
+        .insert({
+          user_id:     session.user.id,
+          course_id:   courseId   || '',
+          course_name: courseName || '',
+          date:        date       || '',
+          caption:     caption    || '',
+          score:       score      ?? null,
+          photos:      JSON.stringify(photos || []),
+        })
+        .select('*')
+        .single();
+
+      if (error) throw error;
+
+      const post = Posts._fromRow({ ...data, round_id: roundId });
+
+      if (Posts._cache) Posts._cache.unshift(post);
+      const stored = read(KEYS.POSTS) || [];
+      stored.unshift(post);
+      write(KEYS.POSTS, stored);
       return post;
     },
 
     update(postId, changes) {
-      const posts = Posts.getAll().map(p =>
-        p.id === postId ? { ...p, ...changes } : p
-      );
+      if (Posts._cache) {
+        Posts._cache = Posts._cache.map(p => p.id === postId ? { ...p, ...changes } : p);
+      }
+      const posts = (read(KEYS.POSTS) || []).map(p => p.id === postId ? { ...p, ...changes } : p);
       write(KEYS.POSTS, posts);
     },
 
-    remove(postId) {
-      write(KEYS.POSTS, Posts.getAll().filter(p => p.id !== postId));
+    async remove(postId) {
+      let session = null;
+      try { ({ data: { session } } = await supabaseClient.auth.getSession()); } catch (_) {}
+
+      if (!session) throw new Error('You must be signed in to delete a post.');
+
+      const { error } = await supabaseClient
+        .from('posts')
+        .delete()
+        .eq('id', postId)
+        .eq('user_id', session.user.id);
+
+      if (error) throw error;
+
+      if (Posts._cache) Posts._cache = Posts._cache.filter(p => p.id !== postId);
+      write(KEYS.POSTS, (read(KEYS.POSTS) || []).filter(p => p.id !== postId));
     },
 
   };
