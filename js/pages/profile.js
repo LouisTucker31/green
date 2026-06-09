@@ -242,12 +242,11 @@ const ProfilePage = (() => {
     if (isLoggedIn) {
       handleEl.textContent = profile.handle || '';
       handleEl.style.display = '';
-      editBtn.textContent = 'Edit Profile';
-      editBtn.onclick = null;
+      editBtn.style.display = '';
     } else {
       handleEl.innerHTML = `<a href="create-account.html" style="color:var(--green-700);font-size:13px;text-decoration:none;font-weight:500;">Sign in</a>`;
       handleEl.style.display = '';
-      editBtn.textContent = 'Edit Profile';
+      editBtn.style.display = 'none';
     }
 
     document.getElementById('profile-handicap-display').textContent = '';

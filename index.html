@@ -136,7 +136,17 @@
   <script src="js/components/nav.js"></script>
   <script src="js/components/map.js"></script>
   <script src="js/pages/home.js"></script>
-<script>
+  <script>
+    (async () => {
+      const skipped = localStorage.getItem('green_skip_auth');
+      if (!skipped) {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) {
+          window.location.replace('login.html');
+          return;
+        }
+      }
+    })();
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js');
     }
